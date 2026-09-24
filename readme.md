@@ -15,67 +15,320 @@
 
 ### **0.1. Tu nombre completo:**
 
+Jorge Rodríguez García
+
 ### **0.2. Nombre del proyecto:**
+
+Opina
 
 ### **0.3. Descripción breve del proyecto:**
 
+Opina es una aplicación web *mobile-first* y red social basada en **temas sobre los que los usuarios votan**. Cada tema se vota con un pulgar arriba (verde) o un pulgar abajo (rojo), acompañado opcionalmente de una justificación. Tras votar, el usuario ve el total de votos positivos y negativos y las opiniones del resto de usuarios, coloreadas según su voto. Funciona como un foro, pero más simple y dinámico. Los usuarios pueden crear temas **públicos** (para toda la comunidad) o **privados** (solo para su lista de amigos, que recibe una notificación).
+
 ### **0.4. URL del proyecto:**
 
-> Puede ser pública o privada, en cuyo caso deberás compartir los accesos de manera segura. Puedes enviarlos a [alvaro@lidr.co](mailto:alvaro@lidr.co) usando algún servicio como [onetimesecret](https://onetimesecret.com/).
+_[PENDIENTE: la aplicación aún no está desplegada]_
 
 ### 0.5. URL o archivo comprimido del repositorio
 
-> Puedes tenerlo alojado en público o en privado, en cuyo caso deberás compartir los accesos de manera segura. Puedes enviarlos a [alvaro@lidr.co](mailto:alvaro@lidr.co) usando algún servicio como [onetimesecret](https://onetimesecret.com/). También puedes compartir por correo un archivo zip con el contenido
+_[PENDIENTE: URL del repositorio remoto o ZIP]_
 
+El proyecto se ha documentado siguiendo **Spec Driven Development** con [OpenSpec](https://github.com/Fission-AI/OpenSpec). La documentación completa está en `docs/` y el plan ejecutable en `openspec/changes/` del repositorio del proyecto.
 
 ---
 
 ## 1. Descripción general del producto
 
-> Describe en detalle los siguientes aspectos del producto:
-
 ### **1.1. Objetivo:**
 
-> Propósito del producto. Qué valor aporta, qué soluciona, y para quién.
+**Propósito.** Dar a los usuarios una forma rápida de opinar sobre temas y conocer la opinión de los demás, sin la carga de un foro tradicional. No hay hilos ni respuestas: cada tema se resuelve con un voto binario y, si el usuario quiere, una justificación breve.
+
+**Qué soluciona.** En los foros y redes sociales, opinar sobre algo exige leer y escribir hilos largos, y saber qué piensa la mayoría es difícil. Opina reduce la interacción a un gesto (👍/👎) y resume el resultado al instante: los totales y los argumentos a favor (verde) y en contra (rojo).
+
+**Para quién.**
+- Usuarios que quieren descubrir temas en tendencia y posicionarse sobre ellos.
+- Usuarios que quieren plantear una pregunta a toda la comunidad (tema público).
+- Usuarios que quieren consultar solo a su círculo de amigos (tema privado con notificación).
 
 ### **1.2. Características y funcionalidades principales:**
 
-> Enumera y describe las características y funcionalidades específicas que tiene el producto para satisfacer las necesidades identificadas.
+| # | Funcionalidad | Descripción |
+|---|---|---|
+| F-01 | **Pantalla principal** | Lista scrolleable de temas con buscador en la parte superior. Sin búsqueda activa se muestran las mayores tendencias (temas públicos ordenados por número total de votos). Al escribir se filtran los temas públicos cuyo título contiene el texto. |
+| F-02 | **Acceso a un tema** | Al pulsar un tema se muestra su título. Si tiene imagen, esta ocupa la mitad superior de la pantalla del móvil. En la parte inferior aparecen dos botones: pulgar arriba verde y pulgar abajo rojo. |
+| F-03 | **Votación con justificación opcional** | Al pulsar un botón se pide una justificación que se puede dejar vacía; al confirmar se emite el voto (uno por usuario y tema). |
+| F-03b | **Resultados y opiniones** | Tras votar, los dos botones se transforman en el total de votos positivos y negativos y en la lista de opiniones: **verde** si el autor votó positivo y **rojo** si votó negativo. |
+| F-04 | **Creación de temas** | Desde el menú principal: título, imagen opcional y visibilidad (pública o privada). |
+| F-05 | **Temas públicos** | Accesibles a todos los usuarios desde la lista de tendencias y la búsqueda. |
+| F-06 | **Temas privados y notificaciones** | Solo la lista de amigos del creador puede acceder a la votación. Los amigos reciben una notificación de que un amigo ha creado una nueva propuesta. |
+
+**Supuestos habilitantes** (mínimos imprescindibles que el enunciado no detalla):
+- **Identificación de usuarios:** registro e inicio de sesión, porque los votos, los temas y los amigos son de un usuario concreto.
+- **Relación de amistad:** modelada en el sistema. La forma de añadir amigos no está definida en el enunciado y queda como cuestión abierta.
+- **Definición de "tendencia":** número total de votos, en orden descendente.
+- **Definición de "opinión":** un voto con justificación.
+- **Visibilidad en listados:** los temas privados no aparecen en la lista ni en la búsqueda.
 
 ### **1.3. Diseño y experiencia de usuario:**
 
-> Proporciona imágenes y/o videotutorial mostrando la experiencia del usuario desde que aterriza en la aplicación, pasando por todas las funcionalidades principales.
+_[PENDIENTE: capturas / vídeo de la aplicación en funcionamiento cuando esté implementada]_
+
+Recorrido previsto de la experiencia de usuario:
+
+```mermaid
+flowchart TD
+    A[Entrar en Opina] --> L{¿Tiene sesión?}
+    L -->|No| R[Login / Registro]
+    R --> B
+    L -->|Sí| B[Pantalla principal:<br/>buscador + lista de tendencias]
+    B -->|Escribe en el buscador| C[Resultados de búsqueda]
+    C --> D
+    B -->|Pulsa un tema| D[Pantalla del tema:<br/>imagen 50% superior + título + 👍 / 👎]
+    D -->|Pulsa 👍 o 👎| E[Diálogo de justificación opcional]
+    E -->|Cancelar| D
+    E -->|Votar| G[Totales 👍 / 👎 +<br/>opiniones verdes y rojas]
+    B -->|Menú → Crear tema| H[Título, imagen opcional,<br/>Público / Privado]
+    H -->|Público| D
+    H -->|Privado| I[Notificación a los amigos]
+    B -->|Menú → Notificaciones| N[Lista de notificaciones]
+    N -->|Pulsa una| D
+```
+
+Esquema de la pantalla de un tema antes y después de votar:
+
+```
+┌──────────────────────┐        ┌──────────────────────┐
+│                      │        │                      │
+│   IMAGEN DEL TEMA    │        │   IMAGEN DEL TEMA    │
+│   (50% de la altura) │        │   (50% de la altura) │
+│                      │        │                      │
+├──────────────────────┤        ├──────────────────────┤
+│ ¿Pizza con piña?     │        │ ¿Pizza con piña?     │
+│                      │        │ 👍 124     👎 87     │
+│                      │  ───►  │ ┌──────────────────┐ │
+│                      │ votar  │ │ ana: ¡Me encanta!│ │ ← verde
+│                      │        │ └──────────────────┘ │
+│┌─────────┐┌─────────┐│        │ ┌──────────────────┐ │
+││   👍    ││   👎    ││        │ │ bruno: Jamás     │ │ ← rojo
+││ (verde) ││ (rojo)  ││        │ └──────────────────┘ │
+│└─────────┘└─────────┘│        │          …           │
+└──────────────────────┘        └──────────────────────┘
+```
 
 ### **1.4. Instrucciones de instalación:**
-> Documenta de manera precisa las instrucciones para instalar y poner en marcha el proyecto en local (librerías, backend, frontend, servidor, base de datos, migraciones y semillas de datos, etc.)
+
+> Instrucciones según el stack y la estructura definidos en la documentación técnica (`docs/06-stack.md`, `docs/02-arquitectura.md`). Se validarán al terminar la fase 1 del plan SDD (`fase-1-plataforma-base`).
+
+**Requisitos previos:** Node.js 22 LTS, npm, Docker y Docker Compose, Git.
+
+1. **Clonar el repositorio e instalar dependencias**
+   ```bash
+   git clone <URL_DEL_REPOSITORIO> opina
+   cd opina
+   npm install
+   ```
+2. **Configurar variables de entorno:** copiar `.env.example` a `.env` y revisar los valores.
+   ```bash
+   cp .env.example .env
+   ```
+   | Variable | Ejemplo local |
+   |---|---|
+   | `DATABASE_URL` | `postgresql://opina:opina@localhost:5432/opina` |
+   | `AUTH_SECRET` | cadena aleatoria (`npx auth secret`) |
+   | `S3_ENDPOINT` | `http://localhost:9000` |
+   | `S3_REGION` | `us-east-1` |
+   | `S3_BUCKET` | `opina-images` |
+   | `S3_ACCESS_KEY_ID` / `S3_SECRET_ACCESS_KEY` | `minioadmin` / `minioadmin` |
+   | `S3_PUBLIC_URL` | `http://localhost:9000/opina-images` |
+3. **Levantar la infraestructura** (PostgreSQL 16 + MinIO con el bucket `opina-images`):
+   ```bash
+   docker compose up -d
+   ```
+4. **Aplicar migraciones y cargar datos semilla** (usuarios `ana`, `bruno`, `carla`, `dani` con contraseña `password123`; amistades `ana↔bruno` y `ana↔carla`; 25 temas públicos y un tema privado):
+   ```bash
+   npx prisma migrate dev
+   npx prisma db seed
+   ```
+5. **Arrancar la aplicación** en `http://localhost:3000`:
+   ```bash
+   npm run dev
+   ```
+6. **Ejecutar las pruebas:**
+   ```bash
+   npm run lint && npm run typecheck && npm test
+   npm run test:e2e
+   ```
 
 ---
 
 ## 2. Arquitectura del Sistema
 
 ### **2.1. Diagrama de arquitectura:**
-> Usa el formato que consideres más adecuado para representar los componentes principales de la aplicación y las tecnologías utilizadas. Explica si sigue algún patrón predefinido, justifica por qué se ha elegido esta arquitectura, y destaca los beneficios principales que aportan al proyecto y justifican su uso, así como sacrificios o déficits que implica.
 
+```mermaid
+flowchart LR
+    subgraph Cliente["Navegador (móvil / escritorio)"]
+        UI["UI React 19<br/>Server + Client Components<br/>Tailwind · TanStack Query"]
+    end
+
+    subgraph App["Aplicación Next.js 15 (Node.js 22)"]
+        direction TB
+        MW["Middleware<br/>(protección de rutas · Auth.js)"]
+        PG["Páginas App Router<br/>/, /temas/[id], /temas/nuevo,<br/>/notificaciones, /login, /registro"]
+        API["Route Handlers /api/*<br/>(validación Zod)"]
+        SVC["Servicios de dominio<br/>Auth · Topic · Vote · VisibilityPolicy ·<br/>Friendship · Notification · ImageStorage"]
+        DAL["Prisma Client"]
+        MW --> PG
+        MW --> API
+        PG --> SVC
+        API --> SVC
+        SVC --> DAL
+    end
+
+    DB[("PostgreSQL 16<br/>+ pg_trgm")]
+    S3[("Almacenamiento S3<br/>(MinIO en local)")]
+
+    UI -- "HTTPS (HTML / JSON)" --> MW
+    DAL --> DB
+    SVC -- "PutObject" --> S3
+    UI -- "GET imagen" --> S3
+```
+
+**Patrón:** **monolito modular por capas** (presentación → API → servicios de dominio → acceso a datos) sobre Next.js full-stack.
+
+**Por qué esta arquitectura.** El dominio es pequeño (usuarios, temas, votos, amistades y notificaciones) y lo lleva un único equipo, sin necesidad de escalar partes por separado. Un monolito full-stack permite que cada incremento del plan SDD recorra todas las capas en un solo cambio, con un único lenguaje (TypeScript) y un único despliegue.
+
+**Beneficios:**
+- **Simplicidad operativa:** una aplicación, una base de datos y un bucket.
+- **Tipos de extremo a extremo:** Prisma genera los tipos y Zod valida en cliente y servidor con el mismo esquema.
+- **Carga inicial rápida en móvil:** la primera página se renderiza en el servidor.
+- **Una sola regla de acceso:** `VisibilityPolicy` es el único punto que decide quién puede ver un tema, y la usan el detalle, el voto y las opiniones.
+- **Integridad garantizada por la base de datos:** restricción de voto único y transacciones.
+
+**Sacrificios / déficits:**
+- La API y la UI se escalan juntas; habría que separarlas si la carga creciera mucho.
+- Queda acoplado al ecosistema de Next.js (Route Handlers, Middleware).
+- Los contadores de votos desnormalizados añaden una regla: solo `VoteService` puede escribir votos.
+- Las notificaciones se crean de forma síncrona en la transacción de creación del tema, lo que es adecuado para listas de amigos acotadas pero no para volúmenes masivos.
 
 ### **2.2. Descripción de componentes principales:**
 
-> Describe los componentes más importantes, incluyendo la tecnología utilizada
+| Componente | Tecnología | Responsabilidad |
+|---|---|---|
+| **Frontend (páginas y componentes)** | Next.js 15 App Router, React 19, Tailwind CSS 4, TanStack Query 5 | `HomePage` (`SearchBar` + `TopicList` con scroll infinito), `TopicPage` (`TopicImage` a `50dvh`, `VoteButtons`, `JustificationDialog`, `VoteResults`, `OpinionList`), `CreateTopicPage`, `NotificationsPage`, `MainMenu`, login y registro. |
+| **Middleware** | Next.js Middleware + Auth.js | Redirige a `/login` las páginas sin sesión y responde `401` a las llamadas `/api/*` sin sesión. |
+| **API** | Route Handlers + Zod | Contrato HTTP: valida las entradas, delega en los servicios y convierte los errores de dominio en códigos HTTP con el formato `{ error: { code, message } }`. |
+| **AuthService** | Auth.js v5 (Credentials, JWT), bcryptjs | Registro, verificación de credenciales y usuario de la sesión. |
+| **TopicService** | TypeScript + Prisma | Tendencias y búsqueda con paginación por cursor (keyset), detalle de un tema y creación de temas. |
+| **VisibilityPolicy** | TypeScript | Decide el acceso: un tema público es accesible para todos; uno privado, para su creador y los amigos del creador. |
+| **VoteService** | Prisma (transacciones) | Voto único, contadores coherentes y listado de opiniones. |
+| **FriendshipService** | Prisma | Consulta de la lista de amigos (solo lectura). |
+| **NotificationService** | Prisma | Crea una notificación por amigo al crear un tema privado y lista las notificaciones de cada usuario. |
+| **ImageStorage** | `@aws-sdk/client-s3`, `file-type` | Valida y sube las imágenes (JPEG/PNG/WebP, máximo 5 MB) a un almacenamiento S3-compatible. |
+| **Base de datos** | PostgreSQL 16 + `pg_trgm`, Prisma 6 | Persistencia, restricciones de integridad y búsqueda por título. |
 
 ### **2.3. Descripción de alto nivel del proyecto y estructura de ficheros**
 
-> Representa la estructura del proyecto y explica brevemente el propósito de las carpetas principales, así como si obedece a algún patrón o arquitectura específica.
+```
+opina/
+├── docs/                         # Documentación técnica (producto, arquitectura, datos, HU, tickets, stack, SDD)
+├── openspec/                     # Spec Driven Development
+│   ├── config.yaml               # Contexto y reglas para generar artefactos
+│   ├── specs/                    # Specs consolidadas (al archivar cada cambio)
+│   └── changes/                  # 6 cambios: proposal · design · specs · tasks
+│       ├── fase-1-plataforma-base/
+│       ├── fase-2-listado-busqueda-temas/
+│       ├── fase-3-detalle-tema/
+│       ├── fase-4-votacion-opiniones/
+│       ├── fase-5-creacion-temas/
+│       └── fase-6-temas-privados-notificaciones/
+├── prisma/
+│   ├── schema.prisma             # Modelo de datos
+│   ├── migrations/               # Migraciones versionadas (+ SQL de pg_trgm y CHECKs)
+│   └── seed.ts                   # Datos de desarrollo
+├── src/
+│   ├── app/                      # Capa de presentación y API (App Router)
+│   │   ├── (auth)/login, (auth)/registro
+│   │   ├── page.tsx              # Pantalla principal
+│   │   ├── temas/[id]/, temas/nuevo/, notificaciones/
+│   │   └── api/                  # Route Handlers: register, auth, topics, votes, opinions, notifications
+│   ├── components/               # Componentes de UI reutilizables
+│   ├── lib/validation/           # Esquemas Zod compartidos cliente/servidor
+│   ├── server/
+│   │   ├── auth/                 # Configuración de Auth.js
+│   │   ├── db/                   # Prisma Client
+│   │   ├── services/             # Lógica de dominio
+│   │   ├── storage/              # ImageStorage (S3 / en memoria para tests)
+│   │   └── errors.ts             # Errores de dominio
+│   └── middleware.ts
+├── tests/{unit,integration,e2e}/
+├── docker-compose.yml            # PostgreSQL + MinIO
+└── .github/workflows/ci.yml
+```
+
+La estructura sigue el patrón de **capas** del apartado 2.1: `src/app` es la presentación y la API, `src/server/services` el dominio y `src/server/db` el acceso a datos. El código de servidor vive en `src/server` para que nunca se importe desde los componentes cliente. `openspec/` guarda las especificaciones que dirigen la implementación.
 
 ### **2.4. Infraestructura y despliegue**
 
-> Detalla la infraestructura del proyecto, incluyendo un diagrama en el formato que creas conveniente, y explica el proceso de despliegue que se sigue
+```mermaid
+flowchart LR
+    Dev["Desarrollador<br/>docker compose (PostgreSQL + MinIO)<br/>next dev"] -->|push / PR| GH["GitHub"]
+    GH --> CI["GitHub Actions<br/>install → prisma migrate deploy →<br/>lint → typecheck → test → build → e2e"]
+    CI -->|merge a main| CD["Build de imagen Docker<br/>(Next.js standalone, Node 22)"]
+    CD --> Prod
+
+    subgraph Prod["Producción"]
+        APP["Contenedor Next.js"]
+        PDB[("PostgreSQL gestionado")]
+        BKT[("Bucket S3")]
+        APP --> PDB
+        APP --> BKT
+    end
+```
+
+**Proceso de despliegue:**
+1. Cada cambio SDD se desarrolla en su propia rama (`feat/fase-N-…`) y se abre un Pull Request.
+2. El CI ejecuta lint, typecheck, tests unitarios y de integración (con un servicio PostgreSQL), build y tests e2e con Playwright. Si algún paso falla, el PR no se puede fusionar.
+3. Al fusionar en `main` se construye la imagen de Next.js (`output: "standalone"`).
+4. Antes de arrancar la nueva versión se ejecuta `prisma migrate deploy` contra la base de datos de producción.
+5. La configuración se inyecta por variables de entorno (`DATABASE_URL`, `AUTH_SECRET`, `S3_*`), validadas con Zod al arrancar.
+6. **Rollback:** se vuelve a desplegar la imagen anterior. Las migraciones son aditivas, así que son compatibles con la versión previa.
 
 ### **2.5. Seguridad**
 
-> Enumera y describe las prácticas de seguridad principales que se han implementado en el proyecto, añadiendo ejemplos si procede
+| Práctica | Detalle |
+|---|---|
+| **Contraseñas con hash** | bcrypt con coste 12. El `passwordHash` nunca se incluye en ninguna respuesta de la API. |
+| **Sesión segura** | JWT de Auth.js en una cookie `httpOnly`, `secure` y `sameSite=lax`, que protege frente a robo por XSS y la mayoría de ataques CSRF. |
+| **Autenticación obligatoria** | El middleware protege todas las rutas salvo `/login`, `/registro`, `/api/register` y `/api/auth/*`. |
+| **Mensaje de login genérico** | Siempre "Credenciales incorrectas", para no revelar qué emails están registrados. |
+| **Autorización centralizada** | `VisibilityPolicy` decide el acceso en detalle, voto y opiniones. Un tema privado inaccesible responde **`404`** (no `403`) para no revelar que existe. |
+| **Validación de entradas** | Zod en todos los endpoints (títulos de 3 a 120 caracteres, justificaciones de hasta 500, enumerados cerrados, cursores validados). |
+| **Consultas parametrizadas** | Prisma parametriza todas las consultas. En la búsqueda con `ILIKE` se escapan `%`, `_` y `\`. |
+| **Subida de imágenes segura** | Tamaño máximo de 5 MB (`413`), tipo comprobado por *magic bytes* (JPEG/PNG/WebP, `415`) y no solo por la extensión, y nombre de objeto aleatorio (`topics/<uuid>.<ext>`) que no depende del nombre original. |
+| **Integridad de datos** | `UNIQUE (topic_id, user_id)` impide votar dos veces incluso con peticiones concurrentes, y `CHECK` garantiza la coherencia de los contadores. |
+| **Secretos fuera del código** | Variables de entorno validadas al arrancar; `.env` excluido del control de versiones. |
+| **XSS** | React escapa todo el contenido generado por usuarios (títulos, justificaciones) y nunca se usa `dangerouslySetInnerHTML`. |
+
+Ejemplo: un usuario que no es amigo intenta votar un tema privado.
+
+```http
+POST /api/topics/7f3c…/votes
+{ "value": "UP" }
+
+HTTP/1.1 404 Not Found
+{ "error": { "code": "NOT_FOUND", "message": "Tema no encontrado" } }
+```
 
 ### **2.6. Tests**
 
-> Describe brevemente algunos de los tests realizados
+Estrategia: **cada escenario `#### Scenario` de las specs de OpenSpec tiene al menos un test** cuyo nombre lo cita. Hay tres niveles:
+
+| Nivel | Herramienta | Ejemplos |
+|---|---|---|
+| **Unitarios** | Vitest | `VisibilityPolicy` (público, privado propio, privado de un amigo, privado ajeno); codificación de cursores; validación de imágenes (PNG válido, 6 MB → `413`, PDF renombrado a `.jpg` → `415`). |
+| **Integración** | Vitest + PostgreSQL de prueba | *Votos concurrentes del mismo usuario*: dos `castVote` simultáneos → solo uno se registra y `totalVotes` sube exactamente en 1. *Orden por tendencia*: temas con 10, 25 y 10 votos se devuelven como B, C, A. *Tema privado no listado*: no aparece en `GET /api/topics` aunque sea el más votado. *Crear un tema privado*: con 2 amigos se generan 2 notificaciones y, si falla una, no se crea el tema (atomicidad). |
+| **End-to-end** | Playwright (viewport 390×844) | Votar con justificación → los botones desaparecen y se muestra la opinión en verde. Comprobar que la imagen del tema mide exactamente la mitad de la altura. Flujo privado: `ana` crea un tema privado → `bruno` ve la notificación, entra y vota → `dani` recibe "tema no encontrado" en la misma URL. |
 
 ---
 
@@ -83,52 +336,419 @@
 
 ### **3.1. Diagrama del modelo de datos:**
 
-> Recomendamos usar mermaid para el modelo de datos, y utilizar todos los parámetros que permite la sintaxis para dar el máximo detalle, por ejemplo las claves primarias y foráneas.
+```mermaid
+erDiagram
+    USER ||--o{ TOPIC : "crea"
+    USER ||--o{ VOTE : "emite"
+    TOPIC ||--o{ VOTE : "recibe"
+    USER ||--o{ FRIENDSHIP : "tiene amigo (user_id)"
+    USER ||--o{ FRIENDSHIP : "es amigo de (friend_id)"
+    USER ||--o{ NOTIFICATION : "recibe (recipient_id)"
+    USER ||--o{ NOTIFICATION : "provoca (actor_id)"
+    TOPIC ||--o{ NOTIFICATION : "referencia"
 
+    USER {
+        uuid id PK
+        varchar(30) username UK "NOT NULL, [a-z0-9_]{3,30}"
+        varchar(254) email UK "NOT NULL, minúsculas"
+        text password_hash "NOT NULL, bcrypt"
+        timestamptz created_at "NOT NULL, default now()"
+    }
+    FRIENDSHIP {
+        uuid user_id PK,FK "→ users.id, ON DELETE CASCADE"
+        uuid friend_id PK,FK "→ users.id, ON DELETE CASCADE"
+        timestamptz created_at "NOT NULL, default now()"
+    }
+    TOPIC {
+        uuid id PK
+        varchar(120) title "NOT NULL, 3-120"
+        text image_url "NULL"
+        enum visibility "NOT NULL, PUBLIC | PRIVATE"
+        uuid author_id FK "→ users.id, NOT NULL"
+        int positive_votes "NOT NULL, default 0, >= 0"
+        int negative_votes "NOT NULL, default 0, >= 0"
+        int total_votes "NOT NULL, default 0 = positive + negative"
+        timestamptz created_at "NOT NULL, default now()"
+    }
+    VOTE {
+        uuid id PK
+        uuid topic_id FK "→ topics.id, NOT NULL, UK(topic_id,user_id)"
+        uuid user_id FK "→ users.id, NOT NULL, UK(topic_id,user_id)"
+        enum value "NOT NULL, UP | DOWN"
+        varchar(500) justification "NULL"
+        timestamptz created_at "NOT NULL, default now()"
+    }
+    NOTIFICATION {
+        uuid id PK
+        uuid recipient_id FK "→ users.id, NOT NULL"
+        uuid actor_id FK "→ users.id, NOT NULL"
+        uuid topic_id FK "→ topics.id, NOT NULL"
+        enum type "NOT NULL, PRIVATE_TOPIC_CREATED"
+        timestamptz created_at "NOT NULL, default now()"
+    }
+```
 
 ### **3.2. Descripción de entidades principales:**
 
-> Recuerda incluir el máximo detalle de cada entidad, como el nombre y tipo de cada atributo, descripción breve si procede, claves primarias y foráneas, relaciones y tipo de relación, restricciones (unique, not null…), etc.
+#### `User` (tabla `users`): usuario de la aplicación
+| Atributo | Tipo | Restricciones | Descripción |
+|---|---|---|---|
+| `id` | UUID | PK | Identificador. |
+| `username` | varchar(30) | NOT NULL, UNIQUE, `[a-z0-9_]{3,30}` | Nombre que se muestra junto a cada opinión y en las notificaciones. |
+| `email` | varchar(254) | NOT NULL, UNIQUE | Normalizado a minúsculas; se usa para iniciar sesión. |
+| `password_hash` | text | NOT NULL | Hash bcrypt (coste 12). Nunca se expone. |
+| `created_at` | timestamptz | NOT NULL, `now()` | Fecha de alta. |
+
+**Relaciones:** 1:N con `Topic` (autor), 1:N con `Vote`, N:M consigo mismo a través de `Friendship`, 1:N con `Notification` como destinatario y como actor.
+
+#### `Friendship` (tabla `friendships`): lista de amigos
+| Atributo | Tipo | Restricciones | Descripción |
+|---|---|---|---|
+| `user_id` | UUID | PK compuesta, FK → `users.id` ON DELETE CASCADE | Usuario dueño de la lista. |
+| `friend_id` | UUID | PK compuesta, FK → `users.id` ON DELETE CASCADE, índice | Amigo. |
+| `created_at` | timestamptz | NOT NULL | Fecha de la relación. |
+
+**Reglas:** la relación es simétrica y se guarda en dos filas (A→B y B→A), de modo que "amigos de X" es una consulta directa. `CHECK (user_id <> friend_id)`.
+
+#### `Topic` (tabla `topics`): tema o propuesta que se vota
+| Atributo | Tipo | Restricciones | Descripción |
+|---|---|---|---|
+| `id` | UUID | PK | Identificador. |
+| `title` | varchar(120) | NOT NULL, 3–120 caracteres | Título del tema. |
+| `image_url` | text | NULL | URL pública de la imagen en S3. Si es nula, no se muestra imagen. |
+| `visibility` | enum `Visibility` | NOT NULL (`PUBLIC`, `PRIVATE`) | Público: accesible para todos. Privado: solo el creador y sus amigos. |
+| `author_id` | UUID | NOT NULL, FK → `users.id` ON DELETE CASCADE, índice | Creador. |
+| `positive_votes` | int | NOT NULL, default 0, ≥ 0 | Total de 👍 (desnormalizado). |
+| `negative_votes` | int | NOT NULL, default 0, ≥ 0 | Total de 👎 (desnormalizado). |
+| `total_votes` | int | NOT NULL, default 0, `CHECK = positive + negative` | Criterio de tendencia. |
+| `created_at` | timestamptz | NOT NULL | Desempate en la ordenación. |
+
+**Índices:** `(visibility, total_votes DESC, created_at DESC, id)` para las tendencias, y GIN trigram sobre `lower(title)` para la búsqueda.
+
+#### `Vote` (tabla `votes`): voto y, si tiene justificación, opinión
+| Atributo | Tipo | Restricciones | Descripción |
+|---|---|---|---|
+| `id` | UUID | PK | Identificador. |
+| `topic_id` | UUID | NOT NULL, FK → `topics.id` ON DELETE CASCADE | Tema votado. |
+| `user_id` | UUID | NOT NULL, FK → `users.id` ON DELETE CASCADE | Votante. |
+| `value` | enum `VoteValue` | NOT NULL (`UP`, `DOWN`) | `UP` = 👍 verde, `DOWN` = 👎 rojo. |
+| `justification` | varchar(500) | NULL | Justificación opcional. Una cadena vacía o solo con espacios se guarda como `NULL`. |
+| `created_at` | timestamptz | NOT NULL | Orden de las opiniones. |
+
+**Restricciones:** `UNIQUE (topic_id, user_id)`, un voto por usuario y tema. Índice `(topic_id, created_at DESC)`.
+
+#### `Notification` (tabla `notifications`): aviso de un nuevo tema privado
+| Atributo | Tipo | Restricciones | Descripción |
+|---|---|---|---|
+| `id` | UUID | PK | Identificador. |
+| `recipient_id` | UUID | NOT NULL, FK → `users.id` | Amigo que recibe el aviso. |
+| `actor_id` | UUID | NOT NULL, FK → `users.id` | Creador del tema. |
+| `topic_id` | UUID | NOT NULL, FK → `topics.id` | Tema privado creado. |
+| `type` | enum `NotificationType` | NOT NULL (`PRIVATE_TOPIC_CREATED`) | Tipo de notificación. |
+| `created_at` | timestamptz | NOT NULL | Orden de la lista. |
+
+**Índice:** `(recipient_id, created_at DESC)`.
 
 ---
 
 ## 4. Especificación de la API
 
-> Si tu backend se comunica a través de API, describe los endpoints principales (máximo 3) en formato OpenAPI. Opcionalmente puedes añadir un ejemplo de petición y de respuesta para mayor claridad
+Los tres endpoints principales, en formato OpenAPI 3.0. Todos requieren sesión (cookie de Auth.js).
+
+```yaml
+openapi: 3.0.3
+info:
+  title: Opina API
+  version: 1.0.0
+servers:
+  - url: http://localhost:3000/api
+components:
+  securitySchemes:
+    sessionCookie:
+      type: apiKey
+      in: cookie
+      name: authjs.session-token
+  schemas:
+    Error:
+      type: object
+      properties:
+        error:
+          type: object
+          properties:
+            code: { type: string, example: NOT_FOUND }
+            message: { type: string, example: Tema no encontrado }
+    TopicSummary:
+      type: object
+      properties:
+        id: { type: string, format: uuid }
+        title: { type: string }
+        imageUrl: { type: string, nullable: true }
+        totalVotes: { type: integer }
+        createdAt: { type: string, format: date-time }
+    TopicDetail:
+      type: object
+      properties:
+        id: { type: string, format: uuid }
+        title: { type: string }
+        imageUrl: { type: string, nullable: true }
+        visibility: { type: string, enum: [PUBLIC, PRIVATE] }
+        myVote: { type: string, enum: [UP, DOWN], nullable: true }
+        results:
+          description: Solo presente si myVote no es nulo
+          type: object
+          properties:
+            positiveVotes: { type: integer }
+            negativeVotes: { type: integer }
+security:
+  - sessionCookie: []
+paths:
+  /topics:
+    get:
+      summary: Tendencias o búsqueda de temas públicos
+      description: Sin `q` devuelve las tendencias (total de votos desc., más recientes primero). Con `q` filtra por título sin distinguir mayúsculas.
+      parameters:
+        - { name: q, in: query, required: false, schema: { type: string, minLength: 1, maxLength: 100 } }
+        - { name: cursor, in: query, required: false, schema: { type: string } }
+      responses:
+        '200':
+          description: Página de 20 temas
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  items: { type: array, items: { $ref: '#/components/schemas/TopicSummary' } }
+                  nextCursor: { type: string, nullable: true }
+        '400': { description: Parámetros inválidos, content: { application/json: { schema: { $ref: '#/components/schemas/Error' } } } }
+        '401': { description: Sin sesión, content: { application/json: { schema: { $ref: '#/components/schemas/Error' } } } }
+  /topics/{id}:
+    get:
+      summary: Detalle de un tema
+      parameters:
+        - { name: id, in: path, required: true, schema: { type: string, format: uuid } }
+      responses:
+        '200': { description: Tema, content: { application/json: { schema: { $ref: '#/components/schemas/TopicDetail' } } } }
+        '404': { description: No existe o el usuario no tiene acceso (tema privado), content: { application/json: { schema: { $ref: '#/components/schemas/Error' } } } }
+  /topics/{id}/votes:
+    post:
+      summary: Emitir voto con justificación opcional
+      parameters:
+        - { name: id, in: path, required: true, schema: { type: string, format: uuid } }
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [value]
+              properties:
+                value: { type: string, enum: [UP, DOWN] }
+                justification: { type: string, maxLength: 500, nullable: true }
+      responses:
+        '201':
+          description: Voto registrado; devuelve los totales actualizados
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  positiveVotes: { type: integer }
+                  negativeVotes: { type: integer }
+                  myVote: { type: string, enum: [UP, DOWN] }
+        '400': { description: Datos inválidos (p. ej. justificación > 500), content: { application/json: { schema: { $ref: '#/components/schemas/Error' } } } }
+        '404': { description: Tema inexistente o sin acceso, content: { application/json: { schema: { $ref: '#/components/schemas/Error' } } } }
+        '409': { description: El usuario ya había votado este tema, content: { application/json: { schema: { $ref: '#/components/schemas/Error' } } } }
+```
+
+**Ejemplo: votar un tema**
+
+```http
+POST /api/topics/2b1e9c1a-3f0d-4c55-9a8e-6a4f7f2d1c10/votes
+Content-Type: application/json
+Cookie: authjs.session-token=…
+
+{ "value": "DOWN", "justification": "La piña no va en la pizza" }
+```
+
+```http
+HTTP/1.1 201 Created
+Content-Type: application/json
+
+{ "positiveVotes": 124, "negativeVotes": 88, "myVote": "DOWN" }
+```
 
 ---
 
 ## 5. Historias de Usuario
 
-> Documenta 3 de las historias de usuario principales utilizadas durante el desarrollo, teniendo en cuenta las buenas prácticas de producto al respecto.
+**Historia de Usuario 1: HU-01 · Ver las tendencias**
 
-**Historia de Usuario 1**
+> **Como** usuario, **quiero** ver al entrar una lista scrolleable con los temas de mayor tendencia, **para** encontrar rápidamente temas sobre los que opinar.
 
-**Historia de Usuario 2**
+- **Épica:** E2 · Descubrimiento de temas · **Prioridad:** Must · **Estimación:** 5 puntos
+- **Criterios de aceptación:**
+  - **CA-01.1** Dado que el usuario entra en la aplicación y no ha buscado nada, entonces ve una lista de temas públicos ordenados por número total de votos descendente y, a igualdad, del más reciente al más antiguo.
+  - **CA-01.2** Cada elemento de la lista muestra el título del tema.
+  - **CA-01.3** Cuando el usuario llega al final de la lista y hay más temas, se cargan los siguientes (scroll continuo, páginas de 20).
+  - **CA-01.4** Los temas privados no aparecen en la lista.
+  - **CA-01.5** Si no hay temas, se muestra un estado vacío.
+  - **CA-01.6** Al pulsar un tema, el usuario navega a su pantalla.
+- **Notas:** la definición de "tendencia" es un supuesto documentado y está aislada en `TopicService.listTrending`.
+- **Tickets:** TKT-011, TKT-012, TKT-013, TKT-015 · **Spec:** `descubrimiento-temas`
 
-**Historia de Usuario 3**
+**Historia de Usuario 2: HU-04 · Votar un tema** *(junto con HU-05 · Justificar el voto)*
+
+> **Como** usuario, **quiero** votar a favor (pulgar arriba) o en contra (pulgar abajo) de un tema, justificando mi voto si lo deseo, **para** expresar mi opinión.
+
+- **Épica:** E4 · Votación y opiniones · **Prioridad:** Must · **Estimación:** 5 + 3 puntos
+- **Criterios de aceptación:**
+  - **CA-04.1** Al pulsar uno de los dos botones se inicia el proceso de voto con el valor elegido.
+  - **CA-05.1** Tras pulsar el botón se muestra una solicitud de justificación con un campo de texto.
+  - **CA-05.2 / CA-05.3** Se puede confirmar el voto con el campo vacío o con hasta 500 caracteres.
+  - **CA-05.4** Una justificación formada solo por espacios se trata como vacía.
+  - **CA-04.2** Al confirmar, el voto queda registrado.
+  - **CA-04.3** Solo se puede emitir un voto por tema; un segundo intento se rechaza.
+  - **CA-04.4** Si el usuario cancela antes de confirmar, no se registra el voto y siguen visibles los dos botones.
+- **Escenario de ejemplo:** *Dado* un tema con 3 votos positivos y 1 negativo, *cuando* el usuario pulsa 👎, escribe "No me convence" y confirma, *entonces* los botones se sustituyen por 👍 3 · 👎 2 y su opinión aparece en rojo.
+- **Tickets:** TKT-019, TKT-021, TKT-023 · **Spec:** `votacion`
+
+**Historia de Usuario 3: HU-12 · Notificar a los amigos de un nuevo tema privado**
+
+> **Como** amigo de un creador, **quiero** recibir una notificación cuando cree un tema privado, **para** poder votarlo.
+
+- **Épica:** E6 · Temas privados · **Prioridad:** Must · **Estimación:** 5 puntos
+- **Criterios de aceptación:**
+  - **CA-12.1** Cuando un usuario crea un tema privado, cada uno de sus amigos recibe una notificación indicando que un amigo ha creado una nueva propuesta.
+  - **CA-12.2** La notificación muestra el nombre del amigo creador y el título del tema.
+  - **CA-12.3** El menú principal da acceso a la pantalla de notificaciones, ordenadas de más reciente a más antigua.
+  - **CA-12.4** Al pulsar una notificación, el usuario entra en el tema privado.
+  - **CA-12.5** Crear un tema público no genera notificaciones.
+  - **CA-12.6** Los usuarios que no son amigos del creador no reciben notificación.
+- **Dependencias:** HU-10 (crear un tema privado) y HU-11 (acceso restringido a amigos).
+- **Tickets:** TKT-029, TKT-030, TKT-031, TKT-032 · **Spec:** `notificaciones`
 
 ---
 
 ## 6. Tickets de Trabajo
 
-> Documenta 3 de los tickets de trabajo principales del desarrollo, uno de backend, uno de frontend, y uno de bases de datos. Da todo el detalle requerido para desarrollar la tarea de inicio a fin teniendo en cuenta las buenas prácticas al respecto. 
+**Ticket 1: [DB] TKT-003 · Esquema Prisma y migración inicial**
 
-**Ticket 1**
+| Campo | Valor |
+|---|---|
+| Tipo | Base de datos |
+| Historias | Todas (base de HU-00 a HU-12) |
+| Cambio SDD | `fase-1-plataforma-base` (tareas 3.1–3.3) |
+| Depende de | TKT-002 (PostgreSQL en Docker y variables de entorno) |
+| Estimación | 3 puntos |
 
-**Ticket 2**
+**Descripción.** Crear el modelo de datos completo de Opina con Prisma y la migración inicial, incluidas las restricciones e índices que Prisma no puede expresar.
 
-**Ticket 3**
+**Tareas técnicas:**
+1. Escribir `prisma/schema.prisma` con los enums `Visibility`, `VoteValue` y `NotificationType` y los modelos `User`, `Friendship`, `Topic`, `Vote` y `Notification`, mapeados a tablas en snake_case (ver sección 3).
+2. Declarar las claves e índices: `@@id([userId, friendId])` en `Friendship`, `@@unique([topicId, userId])` en `Vote`, `@@index([visibility, totalVotes(sort: Desc), createdAt(sort: Desc), id])` en `Topic`, `@@index([topicId, createdAt(sort: Desc)])` en `Vote` y `@@index([recipientId, createdAt(sort: Desc)])` en `Notification`.
+3. Generar la migración con `npx prisma migrate dev --create-only --name init` y añadir el SQL manual:
+   ```sql
+   CREATE EXTENSION IF NOT EXISTS pg_trgm;
+   CREATE INDEX topics_title_trgm_idx ON topics USING gin (lower(title) gin_trgm_ops);
+   ALTER TABLE friendships ADD CONSTRAINT friendships_no_self CHECK (user_id <> friend_id);
+   ALTER TABLE topics ADD CONSTRAINT topics_counters_ok
+     CHECK (positive_votes >= 0 AND negative_votes >= 0 AND total_votes = positive_votes + negative_votes);
+   ```
+4. Crear el singleton de Prisma Client en `src/server/db/client.ts`, reutilizando la instancia en desarrollo para evitar el agotamiento de conexiones por *hot reload*.
+
+**Criterios de aceptación:**
+- `npx prisma migrate dev` aplica la migración sin errores sobre una base de datos vacía.
+- Insertar dos votos del mismo usuario en el mismo tema falla por la restricción UNIQUE.
+- Insertar una amistad de un usuario consigo mismo falla por `friendships_no_self`.
+- Un `UPDATE` que deja `total_votes ≠ positive_votes + negative_votes` falla por `topics_counters_ok`.
+- `EXPLAIN` de la consulta de tendencias usa el índice compuesto, y el de la búsqueda con `ILIKE` usa `topics_title_trgm_idx`.
+
+**Pruebas:** test de integración que verifica las tres restricciones anteriores contra la base `opina_test`.
+**Definición de hecho:** migración versionada en `prisma/migrations/`, tipos generados, lint y typecheck en verde, CI en verde, revisión aprobada.
+
+**Ticket 2: [Backend] TKT-019 · Emisión de voto**
+
+| Campo | Valor |
+|---|---|
+| Tipo | Backend |
+| Historias | HU-04, HU-05, HU-06 |
+| Cambio SDD | `fase-4-votacion-opiniones` (tareas 1.1–1.3) |
+| Depende de | TKT-016 (VisibilityPolicy y detalle de tema) |
+| Estimación | 3 puntos |
+
+**Descripción.** Implementar el registro del voto de un usuario sobre un tema, con justificación opcional, garantizando un único voto por usuario y tema y totales siempre coherentes.
+
+**Tareas técnicas:**
+1. Esquema Zod `castVoteSchema` en `src/lib/validation/vote.ts`: `value: z.enum(["UP","DOWN"])`, `justification` opcional, con `trim`, un máximo de 500 caracteres y conversión de la cadena vacía a `null`.
+2. `VoteService.castVote(topicId, userId, value, justification)` en `src/server/services/vote-service.ts`, dentro de `prisma.$transaction`:
+   - Cargar el tema. Si no existe o `VisibilityPolicy.canAccess` devuelve `false`, lanzar `NotFoundError`.
+   - `vote.create(...)`. Si Prisma devuelve el error `P2002` (UNIQUE), lanzar `ConflictError("ALREADY_VOTED")`.
+   - `topic.update` con `increment: 1` en `positiveVotes` o `negativeVotes` y en `totalVotes`.
+   - Devolver `{ positiveVotes, negativeVotes, myVote }`.
+3. Route Handler `POST /api/topics/[id]/votes`: `requireUser()`, validar el body, llamar al servicio y responder `201`. Los errores se convierten con `toHttpResponse` (`400`, `401`, `404`, `409`).
+
+**Criterios de aceptación:**
+- Un voto válido responde `201` con los totales incrementados en 1 en el valor correcto.
+- Una justificación vacía o formada solo por espacios se guarda como `NULL`; una de 501 caracteres responde `400`.
+- Un segundo voto del mismo usuario responde `409` y los totales no cambian.
+- Dos peticiones concurrentes del mismo usuario producen un único voto y `totalVotes` aumenta exactamente en 1.
+- Un tema inexistente, o privado y sin acceso, responde `404` y no se registra nada.
+
+**Pruebas:** integración en `tests/integration/vote-service.test.ts` con un test por cada escenario de la spec `votacion` ("Primer voto", "Segundo voto", "Votos concurrentes del mismo usuario", "Votar un tema sin acceso", "Justificación solo con espacios", "Justificación demasiado larga").
+**Definición de hecho:** escenarios en verde, sin escrituras en `votes` fuera de `VoteService`, CI en verde, revisión aprobada.
+
+**Ticket 3: [Frontend] TKT-021 · Flujo de voto con justificación**
+
+| Campo | Valor |
+|---|---|
+| Tipo | Frontend |
+| Historias | HU-04, HU-05 |
+| Cambio SDD | `fase-4-votacion-opiniones` (tareas 3.1–3.3) |
+| Depende de | TKT-017 (pantalla de tema con `VoteButtons`), TKT-019 (API de voto) |
+| Estimación | 3 puntos |
+
+**Descripción.** Conectar los botones 👍/👎 de la pantalla de tema con un diálogo que solicita la justificación opcional y emite el voto.
+
+**Tareas técnicas:**
+1. Componente `JustificationDialog` (`src/components/topic/JustificationDialog.tsx`):
+   - Props: `open`, `value: "UP" | "DOWN"`, `onCancel`, `onConfirm(justification)`, `pending`, `error`.
+   - `role="dialog"`, `aria-modal`, foco inicial en el `textarea`, foco atrapado dentro del diálogo, y `Esc` para cancelar.
+   - `textarea` opcional con contador `n/500` y validación con el mismo `castVoteSchema`.
+   - Botones "Cancelar" y "Votar". El color de "Votar" es verde (`UP`) o rojo (`DOWN`) según el voto elegido.
+2. `VoteButtons.onSelect(value)` abre el diálogo con el valor elegido.
+3. Mutación con TanStack Query (`useMutation`) a `POST /api/topics/:id/votes`:
+   - Deshabilitar "Votar" mientras la petición está en curso.
+   - `201` → cerrar el diálogo y pasar los totales a `TopicPage`, que sustituye `VoteButtons` por `VoteResults` (TKT-022).
+   - `409` → invalidar la consulta del tema para mostrar los resultados existentes.
+   - `400` → mostrar el error dentro del diálogo.
+
+**Criterios de aceptación:**
+- Pulsar 👍 abre el diálogo con "Votar" en verde, y pulsar 👎 lo abre con "Votar" en rojo.
+- "Cancelar" o `Esc` cierran el diálogo sin llamar a la API, y los dos botones siguen visibles.
+- Se puede votar con el campo vacío.
+- Con más de 500 caracteres, "Votar" queda deshabilitado y se muestra el límite.
+- Una doble pulsación en "Votar" produce una sola petición.
+- Funciona en un viewport de 390×844 y solo con teclado.
+
+**Pruebas:** tests de componente con Testing Library (cancelar, confirmar vacío, límite de 500, estado `pending`) y e2e con Playwright ("votar positivo con justificación → opinión verde").
+**Definición de hecho:** escenarios "Inicio del proceso de voto", "Justificación opcional" y "Cancelar" cubiertos, sin errores de accesibilidad en `axe`, CI en verde, revisión aprobada.
 
 ---
 
 ## 7. Pull Requests
 
-> Documenta 3 de las Pull Requests realizadas durante la ejecución del proyecto
+_[PENDIENTE: todavía no se han abierto Pull Requests. La implementación empezará con el cambio `fase-1-plataforma-base`.]_
+
+Plan previsto: una PR por cambio SDD, con la rama `feat/fase-N-…`, la descripción basada en el `proposal.md` del cambio y el checklist de `tasks.md`.
 
 **Pull Request 1**
 
+_[PENDIENTE: `feat/fase-1-plataforma-base`: proyecto base, modelo de datos e identificación de usuarios]_
+
 **Pull Request 2**
+
+_[PENDIENTE]_
 
 **Pull Request 3**
 
+_[PENDIENTE]_
