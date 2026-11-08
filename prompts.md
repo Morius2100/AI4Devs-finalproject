@@ -14,6 +14,7 @@
 5. [Historias de usuario](#5-historias-de-usuario)
 6. [Tickets de trabajo](#6-tickets-de-trabajo)
 7. [Pull requests](#7-pull-requests)
+8. [Implementación y pruebas con IA (Revisión 1)](#8-implementación-y-pruebas-con-ia-revisión-1)
 
 ---
 
@@ -312,3 +313,43 @@ _[PENDIENTE]_
 **Prompt 3:**
 
 _[PENDIENTE]_
+
+---
+
+## 8. Implementación y pruebas con IA (Revisión 1)
+
+Prompts reales de la fase de implementación y pruebas, tal como se escribieron (el registro automático completo está en `Prompts.md` del [repositorio del proyecto](https://github.com/Morius2100/ai4devs-finalproject--JRG-)). Las respuestas cortas de confirmación («Sí, …») aprobaron la propuesta que hizo el asistente justo antes. Resumen por fases, errores corregidos y decisiones del humano: [`docs/11-uso-de-ia.md`](docs/11-uso-de-ia.md).
+
+**Asistente utilizado:** Claude Code, con OpenSpec. Contexto fijo del agente en [`CLAUDE.md`](CLAUDE.md).
+
+**Prompt 8.1 · Resumen de la Revisión 1 (sin tocar nada):**
+
+> Dentro de docs he creado el documento Revision1. Busca las cosas que el equipo de LIDR comenta para cambiar y mejorar y crea un resumen sobre las tareas que tendriamos que realizar, por ahora no escribas nada de codigo ni modifiques el sistema, limitate a redactar las tareas que consideres oportunas.
+
+**Prompt 8.2 · Specs para la documentación (T1 a T4):**
+
+> `/opsx:propose` Comprueba que las tareas T1, T2, T3 y T4 no estan implementadas actualmente en el proyecto y en caso de no estarlas crea una spec por tareas no implementarla para realizar estas modificaciones sobre la documentacion del proyecto.
+
+**Prompt 8.3 · Aplicar los cuatro cambios:**
+
+> `/opsx:apply` Realiza la implementacion de los 4 Specs, teniendo en cuenta que ahora tenemos un repositorio Git enlazado a ai4devs-finalproject--JRG-. añade tambien donde sea necesario que tenemos la app desplegada en https://ai4devs-finalproject-jrg.vercel.app/
+
+**Prompt 8.4 · Amistades y seguridad (T6):**
+
+> `/opsx:apply` T6, teniendo en cuenta que vamos a mantener el sistema de amistades, documenta esto para hacer y revisa si realmente existen patrones de seguridad adecuados para proteger la confidencialidad de los usuarios.
+
+**Prompt 8.5 · Pruebas contra la base de datos:**
+
+> Accede a la cuenta de Vercel para aplicar las pruebas sobre la bbDD
+
+El asistente no accedió a Vercel: propuso una rama de Neon, Docker local o producción, y el humano eligió Docker local.
+
+**Prompt 8.6 · Contexto para el agente (T5):**
+
+> Realiza T5 añadiendo a Claude.md las indicaciones de: el stack, las capas, la política de visibilidad, que es única, la regla de que solo el servicio de votos escribe votos. Segun lo que se definio en el proyecto.
+
+**Prompt 8.7 · Casos de test desde los criterios de las historias (T9):**
+
+> `/opsx:apply` Implementa T9, creando los casos de test a partir de los criterios de las historias
+
+**Confirmaciones que aprobaron el trabajo propuesto:** «Sí, aceptar» (solicitud y aceptación de amistad), «Sí, implementar», «Sí, actualizar e2e», «Pasar al grupo 3», «Sí, grupo 4», «Sí, grupo 5», «Sí, sincronizar», «Push entrega», «Sí, accesibilidad» y «Sí, trazar uso de IA».

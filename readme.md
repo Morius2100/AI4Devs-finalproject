@@ -36,6 +36,8 @@ La aplicación está desplegada en Vercel y se puede probar en <https://ai4devs-
 
 El proyecto se ha documentado siguiendo **Spec Driven Development** con [OpenSpec](https://github.com/Fission-AI/OpenSpec). La documentación completa está en [`docs/`](docs/README.md) y el plan ejecutable en [`openspec/changes/`](openspec/changes/), ambas en este mismo repositorio. La fuente de verdad es el [repositorio del proyecto](https://github.com/Morius2100/ai4devs-finalproject--JRG-).
 
+**Uso de IA en el ciclo de desarrollo:** análisis, diseño, implementación, pruebas, despliegue y revisión de seguridad, con sus evidencias, los prompts reales y los errores corregidos, en [`docs/11-uso-de-ia.md`](docs/11-uso-de-ia.md) y [`prompts.md`](prompts.md). El contexto fijo del agente está en [`CLAUDE.md`](CLAUDE.md).
+
 ---
 
 ## 1. Descripción general del producto
