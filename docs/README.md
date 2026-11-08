@@ -22,6 +22,7 @@ Si hay diferencias, manda el repositorio de código. La copia se repite antes de
 7. [Desglose de tareas SDD](07-desglose-tareas-sdd.md)
 8. [Despliegue en Vercel](08-despliegue-vercel.md)
 9. [Revisión de seguridad y confidencialidad](09-revision-seguridad.md)
-10. [Mockups de diseño](mockups/)
+10. [Trazabilidad de los criterios de aceptación](10-trazabilidad-criterios.md)
+11. [Mockups de diseño](mockups/)
 
 El plan ejecutable por cambios de especificación está en [`../openspec/`](../openspec/): [especificaciones](../openspec/specs/), [cambios activos y archivados](../openspec/changes/) y [configuración](../openspec/config.yaml).
