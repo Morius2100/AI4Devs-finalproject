@@ -27,13 +27,14 @@ Opina es una aplicación web _mobile-first_ y red social basada en **temas sobre
 
 ### **0.4. URL del proyecto:**
 
-_[PENDIENTE: la aplicación aún no está desplegada]_
+La aplicación está desplegada en Vercel y se puede probar en <https://ai4devs-finalproject-jrg.vercel.app/>. Para entrar, regístrate con un usuario nuevo desde la pantalla de acceso.
 
 ### 0.5. URL o archivo comprimido del repositorio
 
-_[PENDIENTE: URL del repositorio remoto o ZIP]_
+- **Repositorio de entrega (este):** [Morius2100/AI4Devs-finalproject](https://github.com/Morius2100/AI4Devs-finalproject/tree/feature/entrega-1-JRG), rama `feature/entrega-1-JRG`. Contiene este `readme.md`, el registro de prompts ([`prompts.md`](prompts.md)) y una copia de la documentación y del plan SDD.
+- **Repositorio del proyecto (código completo):** [Morius2100/ai4devs-finalproject--JRG-](https://github.com/Morius2100/ai4devs-finalproject--JRG-). Contiene el código de la aplicación, las pruebas, la integración continua y la fuente de verdad de la documentación.
 
-El proyecto se ha documentado siguiendo **Spec Driven Development** con [OpenSpec](https://github.com/Fission-AI/OpenSpec). La documentación completa está en `docs/` y el plan ejecutable en `openspec/changes/` del repositorio del proyecto.
+El proyecto se ha documentado siguiendo **Spec Driven Development** con [OpenSpec](https://github.com/Fission-AI/OpenSpec). La documentación completa está en [`docs/`](docs/README.md) y el plan ejecutable en [`openspec/changes/`](openspec/changes/), ambas en este mismo repositorio. La fuente de verdad es el [repositorio del proyecto](https://github.com/Morius2100/ai4devs-finalproject--JRG-).
 
 ---
 
@@ -119,13 +120,13 @@ Esquema de la pantalla de un tema antes y después de votar:
 
 ### **1.4. Instrucciones de instalación:**
 
-> Instrucciones según el stack y la estructura definidos en la documentación técnica (`docs/06-stack.md`, `docs/02-arquitectura.md`). Se validarán al terminar la fase 1 del plan SDD (`fase-1-plataforma-base`).
+> Instrucciones según el stack y la estructura definidos en la documentación técnica ([`docs/06-stack.md`](docs/06-stack.md), [`docs/02-arquitectura.md`](docs/02-arquitectura.md)). Si solo quieres probar la aplicación, no hace falta instalar nada: está desplegada en <https://ai4devs-finalproject-jrg.vercel.app/>. Para el despliegue propio, consulta [`docs/08-despliegue-vercel.md`](docs/08-despliegue-vercel.md).
 
 **Requisitos previos:** Node.js 22 LTS, npm, Docker y Docker Compose, Git.
 
 1. **Clonar el repositorio e instalar dependencias**
    ```bash
-   git clone <URL_DEL_REPOSITORIO> opina
+   git clone https://github.com/Morius2100/ai4devs-finalproject--JRG-.git opina
    cd opina
    npm install
    ```
@@ -270,7 +271,9 @@ opina/
 └── .github/workflows/ci.yml
 ```
 
-La estructura sigue el patrón de **capas** del apartado 2.1: `src/app` es la presentación y la API, `src/server/services` el dominio y `src/server/db` el acceso a datos. El código de servidor vive en `src/server` para que nunca se importe desde los componentes cliente. `openspec/` guarda las especificaciones que dirigen la implementación.
+La estructura sigue el patrón de **capas** del apartado 2.1: [`src/app`](https://github.com/Morius2100/ai4devs-finalproject--JRG-/tree/main/src/app) es la presentación y la API, [`src/server/services`](https://github.com/Morius2100/ai4devs-finalproject--JRG-/tree/main/src/server/services) el dominio y [`src/server/db`](https://github.com/Morius2100/ai4devs-finalproject--JRG-/tree/main/src/server/db) el acceso a datos. El código de servidor vive en [`src/server`](https://github.com/Morius2100/ai4devs-finalproject--JRG-/tree/main/src/server) para que nunca se importe desde los componentes cliente. [`openspec/`](openspec/) guarda las especificaciones que dirigen la implementación.
+
+**Enlaces a la estructura.** En este repositorio: [`docs/`](docs/README.md) y [`openspec/`](openspec/). En el [repositorio del proyecto](https://github.com/Morius2100/ai4devs-finalproject--JRG-): [`prisma/`](https://github.com/Morius2100/ai4devs-finalproject--JRG-/tree/main/prisma), [`src/`](https://github.com/Morius2100/ai4devs-finalproject--JRG-/tree/main/src), [`tests/`](https://github.com/Morius2100/ai4devs-finalproject--JRG-/tree/main/tests), [`docker-compose.yml`](https://github.com/Morius2100/ai4devs-finalproject--JRG-/blob/main/docker-compose.yml) y [`.github/workflows/`](https://github.com/Morius2100/ai4devs-finalproject--JRG-/tree/main/.github/workflows).
 
 ### **2.4. Infraestructura y despliegue**
 
@@ -637,7 +640,8 @@ Content-Type: application/json
   - **CA-01.5** Si no hay temas, se muestra un estado vacío.
   - **CA-01.6** Al pulsar un tema, el usuario navega a su pantalla.
 - **Notas:** la definición de "tendencia" es un supuesto documentado y está aislada en `TopicService.listTrending`.
-- **Tickets:** TKT-011, TKT-012, TKT-013, TKT-015 · **Spec:** `descubrimiento-temas`
+- **Tickets:** [TKT-011, TKT-012, TKT-013, TKT-015](docs/05-tickets.md) · **Spec:** [`descubrimiento-temas`](openspec/specs/descubrimiento-temas/spec.md)
+- **En resumen:** el backend calcula las tendencias (solo temas públicos, por votos y fecha, en páginas de 20 con cursor) y la búsqueda, y las expone en `GET /api/topics` (TKT-011, TKT-012); el frontend pinta la lista con scroll continuo (TKT-013) y QA cubre orden, paginación, exclusión de privados y búsqueda (TKT-015). La spec `descubrimiento-temas` fija esas reglas.
 
 **Historia de Usuario 2: HU-04 · Votar un tema** _(junto con HU-05 · Justificar el voto)_
 
@@ -653,7 +657,8 @@ Content-Type: application/json
   - **CA-04.3** Solo se puede emitir un voto por tema; un segundo intento se rechaza.
   - **CA-04.4** Si el usuario cancela antes de confirmar, no se registra el voto y siguen visibles los dos botones.
 - **Escenario de ejemplo:** _Dado_ un tema con 3 votos positivos y 1 negativo, _cuando_ el usuario pulsa 👎, escribe "No me convence" y confirma, _entonces_ los botones se sustituyen por 👍 3 · 👎 2 y su opinión aparece en rojo.
-- **Tickets:** TKT-019, TKT-021, TKT-023 · **Spec:** `votacion`
+- **Tickets:** [TKT-019, TKT-021, TKT-023](docs/05-tickets.md) · **Spec:** [`votacion`](openspec/specs/votacion/spec.md)
+- **En resumen:** el backend registra un único voto por usuario y tema en una transacción que actualiza los contadores y normaliza la justificación (TKT-019); el frontend muestra el diálogo de justificación accesible y gestiona el conflicto de voto repetido (TKT-021) y QA cubre voto único concurrente, contadores y flujo completo (TKT-023). La spec `votacion` fija esas reglas.
 
 **Historia de Usuario 3: HU-12 · Notificar a los amigos de un nuevo tema privado**
 
@@ -668,7 +673,8 @@ Content-Type: application/json
   - **CA-12.5** Crear un tema público no genera notificaciones.
   - **CA-12.6** Los usuarios que no son amigos del creador no reciben notificación.
 - **Dependencias:** HU-10 (crear un tema privado) y HU-11 (acceso restringido a amigos).
-- **Tickets:** TKT-029, TKT-030, TKT-031, TKT-032 · **Spec:** `notificaciones`
+- **Tickets:** [TKT-029, TKT-030, TKT-031, TKT-032](docs/05-tickets.md) · **Spec:** [`notificaciones`](openspec/specs/notificaciones/spec.md)
+- **En resumen:** el backend crea una notificación por amigo en la misma transacción que el tema privado (TKT-029) y las lista de más reciente a más antigua en `GET /api/notifications` (TKT-030); el frontend muestra la pantalla de notificaciones enlazada al tema (TKT-031) y QA cubre la política de visibilidad y el flujo `ana` → `bruno` → `dani` (TKT-032). La spec `notificaciones` fija esas reglas.
 
 ---
 
@@ -688,7 +694,7 @@ Content-Type: application/json
 
 **Tareas técnicas:**
 
-1. Escribir `prisma/schema.prisma` con los enums `Visibility`, `VoteValue` y `NotificationType` y los modelos `User`, `Friendship`, `Topic`, `Vote` y `Notification`, mapeados a tablas en snake_case (ver sección 3).
+1. Escribir [`prisma/schema.prisma`](https://github.com/Morius2100/ai4devs-finalproject--JRG-/blob/main/prisma/schema.prisma) con los enums `Visibility`, `VoteValue` y `NotificationType` y los modelos `User`, `Friendship`, `Topic`, `Vote` y `Notification`, mapeados a tablas en snake_case (ver sección 3).
 2. Declarar las claves e índices: `@@id([userId, friendId])` en `Friendship`, `@@unique([topicId, userId])` en `Vote`, `@@index([visibility, totalVotes(sort: Desc), createdAt(sort: Desc), id])` en `Topic`, `@@index([topicId, createdAt(sort: Desc)])` en `Vote` y `@@index([recipientId, createdAt(sort: Desc)])` en `Notification`.
 3. Generar la migración con `npx prisma migrate dev --create-only --name init` y añadir el SQL manual:
    ```sql
@@ -698,7 +704,7 @@ Content-Type: application/json
    ALTER TABLE topics ADD CONSTRAINT topics_counters_ok
      CHECK (positive_votes >= 0 AND negative_votes >= 0 AND total_votes = positive_votes + negative_votes);
    ```
-4. Crear el singleton de Prisma Client en `src/server/db/client.ts`, reutilizando la instancia en desarrollo para evitar el agotamiento de conexiones por _hot reload_.
+4. Crear el singleton de Prisma Client en [`src/server/db/client.ts`](https://github.com/Morius2100/ai4devs-finalproject--JRG-/blob/main/src/server/db/client.ts), reutilizando la instancia en desarrollo para evitar el agotamiento de conexiones por _hot reload_.
 
 **Criterios de aceptación:**
 
@@ -709,7 +715,7 @@ Content-Type: application/json
 - `EXPLAIN` de la consulta de tendencias usa el índice compuesto, y el de la búsqueda con `ILIKE` usa `topics_title_trgm_idx`.
 
 **Pruebas:** test de integración que verifica las tres restricciones anteriores contra la base `opina_test`.
-**Definición de hecho:** migración versionada en `prisma/migrations/`, tipos generados, lint y typecheck en verde, CI en verde, revisión aprobada.
+**Definición de hecho:** migración versionada en [`prisma/migrations/`](https://github.com/Morius2100/ai4devs-finalproject--JRG-/tree/main/prisma/migrations), tipos generados, lint y typecheck en verde, CI en verde, revisión aprobada.
 
 **Ticket 2: [Backend] TKT-019 · Emisión de voto**
 
@@ -725,8 +731,8 @@ Content-Type: application/json
 
 **Tareas técnicas:**
 
-1. Esquema Zod `castVoteSchema` en `src/lib/validation/vote.ts`: `value: z.enum(["UP","DOWN"])`, `justification` opcional, con `trim`, un máximo de 500 caracteres y conversión de la cadena vacía a `null`.
-2. `VoteService.castVote(topicId, userId, value, justification)` en `src/server/services/vote-service.ts`, dentro de `prisma.$transaction`:
+1. Esquema Zod `castVoteSchema` en [`src/lib/validation/vote.ts`](https://github.com/Morius2100/ai4devs-finalproject--JRG-/blob/main/src/lib/validation/vote.ts): `value: z.enum(["UP","DOWN"])`, `justification` opcional, con `trim`, un máximo de 500 caracteres y conversión de la cadena vacía a `null`.
+2. `VoteService.castVote(topicId, userId, value, justification)` en [`src/server/services/vote-service.ts`](https://github.com/Morius2100/ai4devs-finalproject--JRG-/blob/main/src/server/services/vote-service.ts), dentro de `prisma.$transaction`:
    - Cargar el tema. Si no existe o `VisibilityPolicy.canAccess` devuelve `false`, lanzar `NotFoundError`.
    - `vote.create(...)`. Si Prisma devuelve el error `P2002` (UNIQUE), lanzar `ConflictError("ALREADY_VOTED")`.
    - `topic.update` con `increment: 1` en `positiveVotes` o `negativeVotes` y en `totalVotes`.
@@ -758,7 +764,7 @@ Content-Type: application/json
 
 **Tareas técnicas:**
 
-1. Componente `JustificationDialog` (`src/components/topic/JustificationDialog.tsx`):
+1. Componente `JustificationDialog` ([`src/components/topics/JustificationDialog.tsx`](https://github.com/Morius2100/ai4devs-finalproject--JRG-/blob/main/src/components/topics/JustificationDialog.tsx)):
    - Props: `open`, `value: "UP" | "DOWN"`, `onCancel`, `onConfirm(justification)`, `pending`, `error`.
    - `role="dialog"`, `aria-modal`, foco inicial en el `textarea`, foco atrapado dentro del diálogo, y `Esc` para cancelar.
    - `textarea` opcional con contador `n/500` y validación con el mismo `castVoteSchema`.
