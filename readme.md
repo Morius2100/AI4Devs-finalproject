@@ -67,7 +67,7 @@ El proyecto se ha documentado siguiendo **Spec Driven Development** con [OpenSpe
 **Supuestos habilitantes** (mínimos imprescindibles que el enunciado no detalla):
 
 - **Identificación de usuarios:** registro e inicio de sesión, porque los votos, los temas y los amigos son de un usuario concreto.
-- **Relación de amistad:** modelada en el sistema. La forma de añadir amigos no está definida en el enunciado y queda como cuestión abierta.
+- **Relación de amistad:** modelada en el sistema y **con consentimiento**: se solicita desde el perfil de la persona y la amistad, mutua, solo existe cuando la otra persona la acepta (una solicitud pendiente no da acceso a temas privados). Quitarla es directo. Se decidió así porque, sin consentimiento, cualquiera podía hacerse amigo de otro y leer sus temas privados ([revisión de seguridad](docs/09-revision-seguridad.md), hallazgo S-01).
 - **Definición de "tendencia":** número total de votos, en orden descendente.
 - **Definición de "opinión":** un voto con justificación.
 - **Visibilidad en listados:** los temas privados no aparecen en la lista ni en la búsqueda.
@@ -227,7 +227,7 @@ flowchart LR
 | **TopicService**                     | TypeScript + Prisma                                               | Tendencias y búsqueda con paginación por cursor (keyset), detalle de un tema y creación de temas.                                                                                                                                           |
 | **VisibilityPolicy**                 | TypeScript                                                        | Decide el acceso: un tema público es accesible para todos; uno privado, para su creador y los amigos del creador.                                                                                                                           |
 | **VoteService**                      | Prisma (transacciones)                                            | Voto único, contadores coherentes y listado de opiniones.                                                                                                                                                                                   |
-| **FriendshipService**                | Prisma                                                            | Consulta de la lista de amigos (solo lectura).                                                                                                                                                                                              |
+| **FriendshipService**                | Prisma (transacciones)                                            | Lista de amigos y solicitudes de amistad: solicitar, aceptar, rechazar, cancelar y quitar. Solo aceptar crea la amistad.                                                                                                                                                                                              |
 | **NotificationService**              | Prisma                                                            | Crea una notificación por amigo al crear un tema privado y lista las notificaciones de cada usuario.                                                                                                                                        |
 | **ImageStorage**                     | `@aws-sdk/client-s3`, `file-type`                                 | Valida y sube las imágenes (JPEG/PNG/WebP, máximo 5 MB) a un almacenamiento S3-compatible.                                                                                                                                                  |
 | **Base de datos**                    | PostgreSQL 16 + `pg_trgm`, Prisma 6                               | Persistencia, restricciones de integridad y búsqueda por título.                                                                                                                                                                            |
@@ -309,7 +309,15 @@ flowchart LR
 | **Contraseñas con hash**      | bcrypt con coste 12. El `passwordHash` nunca se incluye en ninguna respuesta de la API.                                                                                                                      |
 | **Sesión segura**             | JWT de Auth.js en una cookie `httpOnly`, `secure` y `sameSite=lax`, que protege frente a robo por XSS y la mayoría de ataques CSRF.                                                                          |
 | **Autenticación obligatoria** | El middleware protege todas las rutas salvo `/login`, `/registro`, `/api/register` y `/api/auth/*`.                                                                                                          |
-| **Mensaje de login genérico** | Siempre "Credenciales incorrectas", para no revelar qué emails están registrados.                                                                                                                            |
+| **Mensaje de login genérico** | Siempre "Credenciales incorrectas", con el mismo tiempo de respuesta exista o no el email (se compara siempre con un hash de bcrypt).                                                                       |
+| **Límite de intentos**        | Login web y de la app (10 por minuto por IP y email, 60 por IP), registro (20 por hora por IP) y solicitudes de amistad (30 por hora por usuario). Responde `429` con `Retry-After`. Contadores en PostgreSQL. |
+| **Amistad con consentimiento** | Las solicitudes de amistad no dan acceso a temas privados hasta que la otra persona las acepta.                                                                                                              |
+| **Imágenes privadas firmadas** | Las imágenes de temas privados se sirven con una URL firmada (HMAC) que caduca a los 30 minutos; sin firma válida `/api/media` responde `404`.                                                              |
+| **Cabeceras HTTP**            | CSP (con `frame-ancestors 'none'`), `X-Content-Type-Options`, `Referrer-Policy`, `Permissions-Policy` y HSTS.                                                                                                |
+| **Seed fuera de producción**  | El build de Vercel falla si se intenta cargar el seed de prueba en producción sin confirmarlo, y el seed exige una contraseña propia fuera de local.                                                          |
+| **Contraseña acotada**        | Entre 8 y 72 bytes (límite real de bcrypt).                                                                                                                                                                  |
+
+Estado de cada hallazgo y riesgos aceptados (sesiones de 30 días sin revocación): [`docs/09-revision-seguridad.md`](docs/09-revision-seguridad.md).
 | **Autorización centralizada** | `VisibilityPolicy` decide el acceso en detalle, voto y opiniones. Un tema privado inaccesible responde **`404`** (no `403`) para no revelar que existe.                                                      |
 | **Validación de entradas**    | Zod en todos los endpoints (títulos de 3 a 120 caracteres, justificaciones de hasta 500, enumerados cerrados, cursores validados).                                                                           |
 | **Consultas parametrizadas**  | Prisma parametriza todas las consultas. En la búsqueda con `ILIKE` se escapan `%`, `_` y `\`.                                                                                                                |
@@ -418,7 +426,17 @@ erDiagram
 | `friend_id`  | UUID        | PK compuesta, FK → `users.id` ON DELETE CASCADE, índice | Amigo.                     |
 | `created_at` | timestamptz | NOT NULL                                                | Fecha de la relación.      |
 
-**Reglas:** la relación es simétrica y se guarda en dos filas (A→B y B→A), de modo que "amigos de X" es una consulta directa. `CHECK (user_id <> friend_id)`.
+**Reglas:** la relación es simétrica y se guarda en dos filas (A→B y B→A), de modo que "amigos de X" es una consulta directa. `CHECK (user_id <> friend_id)`. Solo contiene amistades **aceptadas**.
+
+#### `FriendRequest` (tabla `friend_requests`): solicitud de amistad pendiente
+
+| Atributo       | Tipo        | Restricciones                                           | Descripción                  |
+| -------------- | ----------- | ------------------------------------------------------- | ---------------------------- |
+| `requester_id` | UUID        | PK compuesta, FK → `users.id` ON DELETE CASCADE         | Quien envía la solicitud.    |
+| `addressee_id` | UUID        | PK compuesta, FK → `users.id` ON DELETE CASCADE, índice | Quien la recibe.             |
+| `created_at`   | timestamptz | NOT NULL                                                | Fecha de la solicitud.       |
+
+**Reglas:** `CHECK (requester_id <> addressee_id)`. No concede ningún acceso. Al aceptarla se borra y se insertan las dos filas de `friendships` en una transacción. Además existe `rate_limits` (contadores del límite de intentos, sin relaciones ni datos personales: el email va como hash).
 
 #### `Topic` (tabla `topics`): tema o propuesta que se vota
 
@@ -466,7 +484,9 @@ erDiagram
 
 ## 4. Especificación de la API
 
-Los tres endpoints principales, en formato OpenAPI 3.0. Todos requieren sesión (cookie de Auth.js).
+Los tres endpoints principales, en formato OpenAPI 3.0. Todos requieren sesión (cookie de Auth.js o, en la app, `Authorization: Bearer`).
+
+> El resto de la API (personas y perfiles, **solicitudes de amistad** `PUT/DELETE /api/users/{id}/friendship` y `/api/me/friend-requests`, notificaciones, historias, perfil propio e imágenes) está en [`docs/02-arquitectura.md` §2.5](docs/02-arquitectura.md). Las rutas de inicio de sesión, token, registro y solicitudes de amistad pueden responder `429 Too Many Requests` con `Retry-After`.
 
 ```yaml
 openapi: 3.0.3

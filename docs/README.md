@@ -6,7 +6,7 @@ Esta carpeta es una **copia de la documentación técnica** del proyecto, inclui
 | --- | --- |
 | Fuente de verdad | [Morius2100/ai4devs-finalproject--JRG-](https://github.com/Morius2100/ai4devs-finalproject--JRG-) (carpetas `docs/` y `openspec/`) |
 | Rama de origen | `main` |
-| Commit de origen | `d670fa8` |
+| Commit de origen | `992564a` |
 | Aplicación desplegada | <https://ai4devs-finalproject-jrg.vercel.app/> |
 
 Si hay diferencias, manda el repositorio de código. La copia se repite antes de cada entrega.
@@ -21,6 +21,7 @@ Si hay diferencias, manda el repositorio de código. La copia se repite antes de
 6. [Stack tecnológico](06-stack.md)
 7. [Desglose de tareas SDD](07-desglose-tareas-sdd.md)
 8. [Despliegue en Vercel](08-despliegue-vercel.md)
-9. [Mockups de diseño](mockups/)
+9. [Revisión de seguridad y confidencialidad](09-revision-seguridad.md)
+10. [Mockups de diseño](mockups/)
 
 El plan ejecutable por cambios de especificación está en [`../openspec/`](../openspec/): [especificaciones](../openspec/specs/), [cambios activos y archivados](../openspec/changes/) y [configuración](../openspec/config.yaml).
