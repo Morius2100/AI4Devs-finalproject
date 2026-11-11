@@ -1,9 +1,13 @@
 > Detalla en esta sección los prompts principales utilizados durante la creación del proyecto, que justifiquen el uso de asistentes de código en todas las fases del ciclo de vida del desarrollo. Esperamos un máximo de 3 por sección, principalmente los de creación inicial o los de corrección o adición de funcionalidades que consideres más relevantes.
 > Puedes añadir adicionalmente la conversación completa como link o archivo adjunto si así lo consideras
 
-**Asistente utilizado:** Claude Code (modelo Claude Opus 5.5), con OpenSpec 1.4.1 para Spec Driven Development.
+**Asistente utilizado:** Claude Code, con OpenSpec 1.4.1 para Spec Driven Development.
 
-**Nota:** la documentación se generó con un único prompt inicial detallado (Prompt 1 de la sección 1), que definía todos los entregables. Un segundo prompt adaptó esa documentación a esta plantilla. En cada sección se indica qué prompt (o qué parte del Prompt 1) produjo el contenido y qué generó el asistente a partir de él. Las secciones que dependen de la implementación (Pull Requests) quedan pendientes.
+**Modelos:** Claude Opus 5.5, Claude Sonnet 5.5 y Claude Haiku 5.5, cambiados con `/model` según la sesión; el registro automático (`Prompts.md` del repositorio del proyecto) guarda cada cambio. Los commits del repositorio del proyecto declaran el modelo con `Co-Authored-By`: 16 de Sonnet 5.5, 3 de Haiku 5.5 y 2 de Opus 5.5. No se atribuye cada resultado a un modelo concreto.
+
+**Contexto del asistente:** [`CLAUDE.md`](CLAUDE.md) (stack, capas, política de visibilidad única y regla de que solo `VoteService` escribe votos), más las specs y las tareas de cada cambio de OpenSpec.
+
+**Nota:** la documentación se generó con un único prompt inicial detallado (Prompt 1 de la sección 1), que definía todos los entregables. Un segundo prompt adaptó esa documentación a esta plantilla. En cada sección se indica qué prompt (o qué parte del Prompt 1) produjo el contenido y qué generó el asistente a partir de él. Las secciones 1 a 6 corresponden a la fase de análisis y diseño; la implementación, las pruebas, el despliegue y las Pull Requests están en las secciones 7 y 8.
 
 ## Índice
 
@@ -304,15 +308,17 @@ _[No se usaron más prompts para esta sección]_
 
 **Prompt 1:**
 
-_[PENDIENTE: la implementación aún no ha comenzado. Se añadirán los prompts de ejecución, por ejemplo `/opsx:apply fase-1-plataforma-base`]_
+_(Prompt 8.8)_: `/opsx:apply T10 Despliegue, creando y documentando el diagrama CI/CD` y la propuesta «Proteger main…». Originaron el contenido de las [PR #1 a #3](https://github.com/Morius2100/ai4devs-finalproject--JRG-/pulls?q=is%3Apr) (CI en verde, documentación CI/CD y archivo del cambio `documentar-ci-cd`).
 
 **Prompt 2:**
 
-_[PENDIENTE]_
+_(Prompt 8.9)_: `/opsx:propose` para poder borrar temas propios. Originó el contenido de la [PR #4](https://github.com/Morius2100/ai4devs-finalproject--JRG-/pull/4) (cambio `borrar-temas-propios`, HU-23), que sigue abierta.
 
 **Prompt 3:**
 
-_[PENDIENTE]_
+_[No se usaron más prompts para esta sección]_
+
+Hasta el 9 de noviembre de 2026 los cambios se publicaron con `push` directo a `main`, así que las fases 1 a 6 no tienen PR. El detalle está en el [README §7](readme.md).
 
 ---
 
@@ -320,7 +326,9 @@ _[PENDIENTE]_
 
 Prompts reales de la fase de implementación y pruebas, tal como se escribieron (el registro automático completo está en `Prompts.md` del [repositorio del proyecto](https://github.com/Morius2100/ai4devs-finalproject--JRG-)). Las respuestas cortas de confirmación («Sí, …») aprobaron la propuesta que hizo el asistente justo antes. Resumen por fases, errores corregidos y decisiones del humano: [`docs/11-uso-de-ia.md`](docs/11-uso-de-ia.md).
 
-**Asistente utilizado:** Claude Code, con OpenSpec. Contexto fijo del agente en [`CLAUDE.md`](CLAUDE.md).
+**Asistente utilizado:** Claude Code, con OpenSpec. Contexto fijo del agente en [`CLAUDE.md`](CLAUDE.md). Modelos usados: véase la cabecera de este documento.
+
+**Los 5 prompts clave** son el 8.4 (seguridad), el 8.6 (contexto del agente), el 8.7 (tests desde los criterios), el 8.8 (CI/CD, protección de `main`, APK y Docker) y el 8.9 (borrar temas, HU-23), marcados con ★. El resto son de apoyo. Al final de la sección se explica dónde decidió el humano.
 
 **Prompt 8.1 · Resumen de la Revisión 1 (sin tocar nada):**
 
@@ -334,7 +342,7 @@ Prompts reales de la fase de implementación y pruebas, tal como se escribieron 
 
 > `/opsx:apply` Realiza la implementacion de los 4 Specs, teniendo en cuenta que ahora tenemos un repositorio Git enlazado a ai4devs-finalproject--JRG-. añade tambien donde sea necesario que tenemos la app desplegada en https://ai4devs-finalproject-jrg.vercel.app/
 
-**Prompt 8.4 · Amistades y seguridad (T6):**
+**Prompt 8.4 ★ · Amistades y seguridad (T6):**
 
 > `/opsx:apply` T6, teniendo en cuenta que vamos a mantener el sistema de amistades, documenta esto para hacer y revisa si realmente existen patrones de seguridad adecuados para proteger la confidencialidad de los usuarios.
 
@@ -344,12 +352,37 @@ Prompts reales de la fase de implementación y pruebas, tal como se escribieron 
 
 El asistente no accedió a Vercel: propuso una rama de Neon, Docker local o producción, y el humano eligió Docker local.
 
-**Prompt 8.6 · Contexto para el agente (T5):**
+**Prompt 8.6 ★ · Contexto para el agente (T5):**
 
 > Realiza T5 añadiendo a Claude.md las indicaciones de: el stack, las capas, la política de visibilidad, que es única, la regla de que solo el servicio de votos escribe votos. Segun lo que se definio en el proyecto.
 
-**Prompt 8.7 · Casos de test desde los criterios de las historias (T9):**
+**Prompt 8.7 ★ · Casos de test desde los criterios de las historias (T9):**
 
 > `/opsx:apply` Implementa T9, creando los casos de test a partir de los criterios de las historias
+
+**Prompt 8.8 ★ · CI/CD, protección de `main`, APK y Docker (T10):**
+
+> `/opsx:apply` T10 Despliegue, creando y documentando el diagrama CI/CD
+
+> `/opsx:propose` Crea una propuesta para: Proteger main: exigir el CI y hacer que Vercel espere a sus resultados y construir el APK y hacer que la aplicacion tenga dockerfile
+
+Resultado: [`docs/12-ci-cd.md`](docs/12-ci-cd.md) con los diagramas y los huecos, y el cambio `endurecer-cicd-apk-docker` (_ruleset_ de `main`, job `apk` y `Dockerfile` con su job `docker`). Al documentarlo apareció un fallo que nadie había visto: el CI estaba en rojo desde el primer commit (el lock de npm 11 no pasaba `npm ci` con npm 10).
+
+**Prompt 8.9 ★ · Borrar temas propios (HU-23):**
+
+> `/opsx:propose` Realiza una modificación para poder borrar temas publicados. Solo se podrán borrar temas publicados por uno mismo y solo desde la pantalla del detalle del propio tema cuando se este dentro de uno. Para borrarlo se creará un botón con una papelera, guardando siempre el diseñor de la aplicación para la creación de este botón. En los temas que no creo el usuario que los está visualizando, no aparecerá el susodicho botón.
+
+Resultado: el cambio `borrar-temas-propios` (HU-23, TKT-087 a TKT-089), que acaba en la [PR #4](https://github.com/Morius2100/ai4devs-finalproject--JRG-/pull/4), con tests de integración, de componentes, e2e y de accesibilidad. Después, con Docker ya arrancado, el humano pidió: «Ahora que docker arranco continua con el borrado de temas propios».
+
+**Dónde decidió el humano (criterio propio):**
+
+- **Alcance:** qué tareas de la Revisión 1 se hacen y en qué orden. El borrado de temas (8.9) fue una petición propia, acotada a «solo los propios y solo desde el detalle».
+- **Producto:** aceptar que la amistad exija solicitud y aceptación (cuestión abierta Q-04), tras el informe de seguridad del prompt 8.4.
+- **Entorno de pruebas:** ante la petición de acceder a Vercel (8.5), el asistente propuso alternativas y el humano eligió PostgreSQL local, sin tocar producción.
+- **CI/CD (8 de noviembre de 2026):** la excepción del propietario solo se puede usar mediante PR, se protege solo `main` (sin job de despliegue propio), el job `apk` es informativo y no se exige aprobación de otra persona.
+- **Verificación del _ruleset_:** el humano comprobó que bloquea el `push` («El ruleset funciona, bloquea el PUSH…») y que para abrir PR había que trabajar desde otra rama; de ahí la rama `JRGA` y las PR del README §7.
+- **Publicación:** los commits se hacen en local y el `push` se pide aparte («Push entrega»); el `push` al repositorio del proyecto puede desplegar en producción.
+
+Dónde se equivocó la IA y cómo se detectó (consulta a la capa, `Revision1.txt` subido por error, contador de intentos entre ejecuciones, nombres accesibles): tabla en [`docs/11-uso-de-ia.md`](docs/11-uso-de-ia.md).
 
 **Confirmaciones que aprobaron el trabajo propuesto:** «Sí, aceptar» (solicitud y aceptación de amistad), «Sí, implementar», «Sí, actualizar e2e», «Pasar al grupo 3», «Sí, grupo 4», «Sí, grupo 5», «Sí, sincronizar», «Push entrega», «Sí, accesibilidad» y «Sí, trazar uso de IA».

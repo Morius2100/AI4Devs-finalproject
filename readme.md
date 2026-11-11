@@ -27,7 +27,7 @@ Opina es una aplicación web _mobile-first_ y red social basada en **temas sobre
 
 ### **0.4. URL del proyecto:**
 
-La aplicación está desplegada en Vercel y se puede probar en <https://ai4devs-finalproject-jrg.vercel.app/>. Para entrar, regístrate con un usuario nuevo desde la pantalla de acceso.
+La aplicación está desplegada en Vercel y se puede probar en <https://ai4devs-finalproject-jrg.vercel.app/>. Para entrar, regístrate con un usuario de prueba propio desde la pantalla de acceso (no hace falta ninguna cuenta precargada; ver [0.6](#06-credenciales-de-prueba-y-pasos-de-verificación)). Comprobación rápida de que el servidor responde: <https://ai4devs-finalproject-jrg.vercel.app/api/health> devuelve `{"status":"ok"}`.
 
 ### 0.5. URL o archivo comprimido del repositorio
 
@@ -39,6 +39,29 @@ El proyecto se ha documentado siguiendo **Spec Driven Development** con [OpenSpe
 **CI/CD:** el diagrama de la canalización (GitHub Actions, Vercel, Neon y R2), los entornos y los huecos pendientes están en [`docs/12-ci-cd.md`](docs/12-ci-cd.md).
 
 **Uso de IA en el ciclo de desarrollo:** análisis, diseño, implementación, pruebas, despliegue y revisión de seguridad, con sus evidencias, los prompts reales y los errores corregidos, en [`docs/11-uso-de-ia.md`](docs/11-uso-de-ia.md) y [`prompts.md`](prompts.md). El contexto fijo del agente está en [`CLAUDE.md`](CLAUDE.md).
+
+### 0.6. Credenciales de prueba y pasos de verificación
+
+**Credenciales de prueba.** Solo se usan datos de prueba y el repositorio no contiene secretos reales: `.env*` está en `.gitignore`, solo se versiona `.env.example` con valores de relleno y el CI y el `Dockerfile` usan secretos ficticios.
+
+| Entorno | Cómo acceder |
+| --- | --- |
+| **Despliegue** ([Vercel](https://ai4devs-finalproject-jrg.vercel.app/)) | Crea un usuario de prueba propio en `/registro` (nombre de usuario, email y contraseña de 8 a 72 caracteres). No se publican credenciales del despliegue, y los usuarios del _seed_ no se cargan en producción: el build de Vercel lo bloquea sin confirmación explícita y exige `SEED_PASSWORD`. Para probar amistades y temas privados crea dos usuarios (por ejemplo, uno en una ventana privada). |
+| **Local**, tras `npm run prisma:seed` | `ana@opina.test`, `bruno@opina.test`, `carla@opina.test` y `dani@opina.test`, todos con la contraseña `password123`. Amistades `ana↔bruno` y `ana↔carla`; `dani` no es amigo de nadie. |
+| **Servicios de Docker (solo local)** | PostgreSQL `opina` / `opina`; MinIO `opina` / `opina123` (consola en `http://localhost:9001`). Valores de desarrollo que no se usan fuera de tu máquina. |
+
+**Pasos de verificación en el despliegue** (unos 10 minutos, con dos usuarios de prueba):
+
+1. Abre `/api/health`: debe responder `{"status":"ok"}`.
+2. Regístrate (HU-00): tras el registro entras en la pantalla principal. Cierra sesión desde el menú y vuelve a entrar con el email y la contraseña.
+3. Pantalla principal (HU-01, HU-02): se ve la lista de tendencias y el buscador filtra por título; al vaciarlo vuelven las tendencias.
+4. Crea un tema público con imagen (HU-08, HU-09): desde el menú, con un título y una imagen JPEG, PNG o WebP de hasta 4 MB. Encuéntralo con el buscador.
+5. Vota con el segundo usuario (HU-04 a HU-07): abre el tema, pulsa 👍 o 👎 y escribe una justificación. Se muestran los totales y tu opinión en verde (👍) o rojo (👎). Al volver a entrar ya no hay botones: el voto es único.
+6. Tema privado y notificación (HU-10 a HU-12): haz amigos a los dos usuarios (solicitud y aceptación en la pantalla de personas), crea un tema privado con el primero y comprueba que el segundo recibe la notificación y puede votarlo. Un tercer usuario que abra la misma URL ve «tema no encontrado».
+
+**Verificación en local:** `npm run lint && npm run typecheck && npm test && npm run test:e2e` (ver §1.4, paso 6, y §2.6).
+
+**Evidencia de funcionamiento:** aplicación desplegada ([URL](https://ai4devs-finalproject-jrg.vercel.app/)), código y documentación ([repositorio del proyecto](https://github.com/Morius2100/ai4devs-finalproject--JRG-)), ejecuciones del CI en [GitHub Actions](https://github.com/Morius2100/ai4devs-finalproject--JRG-/actions) y la APK de depuración que construye el job `apk` como artefacto.
 
 ---
 
@@ -68,6 +91,16 @@ El proyecto se ha documentado siguiendo **Spec Driven Development** con [OpenSpe
 | F-05  | **Temas públicos**                      | Accesibles a todos los usuarios desde la lista de tendencias y la búsqueda.                                                                                                                                                                         |
 | F-06  | **Temas privados y notificaciones**     | Solo la lista de amigos del creador puede acceder a la votación. Los amigos reciben una notificación de que un amigo ha creado una nueva propuesta.                                                                                                 |
 
+**Funcionalidades must-have operativas (5):**
+
+1. **F-01** Lista de tendencias y buscador (HU-01, HU-02). F-05 (temas públicos) se cubre aquí y en F-04.
+2. **F-02 y F-03** Acceso a un tema y votación con justificación opcional (HU-03 a HU-05).
+3. **F-03b** Resultados y opiniones coloreadas (HU-06, HU-07).
+4. **F-04** Creación de temas con imagen opcional (HU-08 a HU-10).
+5. **F-06** Temas privados con notificación a los amigos (HU-11, HU-12).
+
+Cada una tiene sus tests: `tests/e2e/descubrimiento-temas.spec.ts`, `votacion.spec.ts`, `creacion-temas.spec.ts` y `temas-privados.spec.ts`, además de las pruebas unitarias y de integración (§2.6). Más allá de este alcance inicial se implementaron, siempre con su historia y su spec: personas y amistades con consentimiento, historias de amigos, perfil, borrar un tema propio (HU-23, en la PR #4, pendiente de fusionar) y la app Android.
+
 **Supuestos habilitantes** (mínimos imprescindibles que el enunciado no detalla):
 
 - **Identificación de usuarios:** registro e inicio de sesión, porque los votos, los temas y los amigos son de un usuario concreto.
@@ -78,9 +111,9 @@ El proyecto se ha documentado siguiendo **Spec Driven Development** con [OpenSpe
 
 ### **1.3. Diseño y experiencia de usuario:**
 
-_[PENDIENTE: capturas / vídeo de la aplicación en funcionamiento cuando esté implementada]_
+La aplicación está implementada y desplegada (§0.4). No se incluyen capturas ni vídeo: la forma de verla funcionando es la [URL desplegada](https://ai4devs-finalproject-jrg.vercel.app/) siguiendo los pasos de verificación de §0.6. Los diseños de las pantallas de personas y de perfil están en [`docs/mockups/`](docs/mockups/).
 
-Recorrido previsto de la experiencia de usuario:
+Recorrido de la experiencia de usuario:
 
 ```mermaid
 flowchart TD
@@ -140,28 +173,30 @@ Esquema de la pantalla de un tema antes y después de votar:
    ```
    | Variable                                    | Ejemplo local                                   |
    | ------------------------------------------- | ----------------------------------------------- |
-   | `DATABASE_URL`                              | `postgresql://opina:opina@localhost:5432/opina` |
+   | `DATABASE_URL`                              | `postgresql://opina:opina@localhost:5433/opina?schema=public` |
    | `AUTH_SECRET`                               | cadena aleatoria (`npx auth secret`)            |
    | `S3_ENDPOINT`                               | `http://localhost:9000`                         |
    | `S3_REGION`                                 | `us-east-1`                                     |
    | `S3_BUCKET`                                 | `opina-images`                                  |
-   | `S3_ACCESS_KEY_ID` / `S3_SECRET_ACCESS_KEY` | `minioadmin` / `minioadmin`                     |
+   | `S3_ACCESS_KEY_ID` / `S3_SECRET_ACCESS_KEY` | `opina` / `opina123`                     |
    | `S3_PUBLIC_URL`                             | `http://localhost:9000/opina-images`            |
 3. **Levantar la infraestructura** (PostgreSQL 16 + MinIO con el bucket `opina-images`):
    ```bash
    docker compose up -d
    ```
-4. **Aplicar migraciones y cargar datos semilla** (usuarios `ana`, `bruno`, `carla`, `dani` con contraseña `password123`; amistades `ana↔bruno` y `ana↔carla`; 25 temas públicos y un tema privado):
+4. **Aplicar migraciones y cargar datos semilla** (usuarios `ana`, `bruno`, `carla` y `dani`, con email `<nombre>@opina.test` y contraseña `password123`; amistades `ana↔bruno` y `ana↔carla`; 25 temas públicos y un tema privado):
    ```bash
-   npx prisma migrate dev
-   npx prisma db seed
+   npm run prisma:migrate
+   npm run prisma:seed
    ```
 5. **Arrancar la aplicación** en `http://localhost:3000`:
    ```bash
    npm run dev
    ```
-6. **Ejecutar las pruebas:**
+6. **Ejecutar las pruebas.** Las de integración usan la base `opina_test` (la crea Docker): copia `.env.example` a `.env.test`, cambia `opina` por `opina_test` en `DATABASE_URL` y activa `IMAGE_STORAGE="memory"`; después aplica las migraciones y el _seed_ a esa base. Los e2e usan `.env` y construyen y arrancan la aplicación solos.
    ```bash
+   DATABASE_URL="postgresql://opina:opina@localhost:5433/opina_test?schema=public" npx prisma migrate deploy
+   DATABASE_URL="postgresql://opina:opina@localhost:5433/opina_test?schema=public" npm run prisma:seed
    npm run lint && npm run typecheck && npm test
    npm run test:e2e
    ```
@@ -233,7 +268,7 @@ flowchart LR
 | **VoteService**                      | Prisma (transacciones)                                            | Voto único, contadores coherentes y listado de opiniones.                                                                                                                                                                                   |
 | **FriendshipService**                | Prisma (transacciones)                                            | Lista de amigos y solicitudes de amistad: solicitar, aceptar, rechazar, cancelar y quitar. Solo aceptar crea la amistad.                                                                                                                                                                                              |
 | **NotificationService**              | Prisma                                                            | Crea una notificación por amigo al crear un tema privado y lista las notificaciones de cada usuario.                                                                                                                                        |
-| **ImageStorage**                     | `@aws-sdk/client-s3`, `file-type`                                 | Valida y sube las imágenes (JPEG/PNG/WebP, máximo 5 MB) a un almacenamiento S3-compatible.                                                                                                                                                  |
+| **ImageStorage**                     | `@aws-sdk/client-s3`, `file-type`                                 | Valida y sube las imágenes (JPEG/PNG/WebP, máximo 4 MB) a un almacenamiento S3-compatible.                                                                                                                                                  |
 | **Base de datos**                    | PostgreSQL 16 + `pg_trgm`, Prisma 6                               | Persistencia, restricciones de integridad y búsqueda por título.                                                                                                                                                                            |
 
 ### **2.3. Descripción de alto nivel del proyecto y estructura de ficheros**
@@ -285,13 +320,13 @@ La estructura sigue el patrón de **capas** del apartado 2.1: [`src/app`](https:
 flowchart LR
     Dev["Desarrollador<br/>docker compose (PostgreSQL + MinIO)<br/>next dev"] -->|push / PR| GH["GitHub"]
     GH --> CI["GitHub Actions<br/>install → prisma migrate deploy →<br/>lint → typecheck → test → build → e2e"]
-    CI -->|merge a main| CD["Build de imagen Docker<br/>(Next.js standalone, Node 22)"]
+    CI -->|PR con ci en verde → merge a main| CD["Vercel<br/>npm run vercel-build<br/>(migraciones + next build)"]
     CD --> Prod
 
     subgraph Prod["Producción"]
-        APP["Contenedor Next.js"]
-        PDB[("PostgreSQL gestionado")]
-        BKT[("Bucket S3")]
+        APP["Next.js en Vercel<br/>ai4devs-finalproject-jrg.vercel.app"]
+        PDB[("PostgreSQL en Neon")]
+        BKT[("Cloudflare R2")]
         APP --> PDB
         APP --> BKT
     end
@@ -299,12 +334,14 @@ flowchart LR
 
 **Proceso de despliegue:**
 
-1. Cada cambio SDD se desarrolla en su propia rama (`feat/fase-N-…`) y se abre un Pull Request.
-2. El CI ejecuta lint, typecheck, tests unitarios y de integración (con un servicio PostgreSQL), build y tests e2e con Playwright. Si algún paso falla, el PR no se puede fusionar.
-3. Al fusionar en `main` se construye la imagen de Next.js (`output: "standalone"`).
-4. Antes de arrancar la nueva versión se ejecuta `prisma migrate deploy` contra la base de datos de producción.
+1. Los cambios se desarrollan en una rama (hoy `JRGA`) y se abre una Pull Request hacia `main`. Hasta el 9 de noviembre de 2026, las fases 1 a 6 y las mejoras posteriores se publicaron con `push` directo a `main`.
+2. El CI (GitHub Actions) ejecuta en el job `ci` migraciones, _seed_, lint, typecheck, Vitest (unitarias e integración, con un servicio PostgreSQL), build y Playwright con axe-core. Los jobs `apk` (APK de depuración como artefacto) y `docker` (imagen y `/api/health`) son informativos. El _ruleset_ de `main` (`.github/rulesets/main.json`) exige PR y el check `ci`; el propietario comprobó que bloquea el `push` directo.
+3. Al fusionar en `main`, Vercel despliega producción con `npm run vercel-build`: `prisma generate`, `prisma migrate deploy` (solo en producción) y `next build`. Las ramas y las PR reciben una vista previa sin migrar. Vercel no espera de forma explícita al CI: es un hueco conocido ([`docs/12-ci-cd.md`](docs/12-ci-cd.md) §12.5).
+4. Las migraciones usan la conexión directa de Neon. El _seed_ de prueba no se carga en producción sin confirmación explícita (`scripts/seed-guard.mjs`).
 5. La configuración se inyecta por variables de entorno (`DATABASE_URL`, `AUTH_SECRET`, `S3_*`), validadas con Zod al arrancar.
-6. **Rollback:** se vuelve a desplegar la imagen anterior. Las migraciones son aditivas, así que son compatibles con la versión previa.
+6. **Rollback:** en Vercel, _Promote to Production_ sobre un despliegue anterior. Las migraciones son aditivas, así que son compatibles con la versión previa.
+
+La aplicación también se puede ejecutar en un contenedor (`Dockerfile` y `docker compose --profile app up -d --build`) y el CI genera la APK Android. Los entornos, los diagramas completos y los huecos pendientes están en [`docs/12-ci-cd.md`](docs/12-ci-cd.md).
 
 ### **2.5. Seguridad**
 
@@ -320,15 +357,15 @@ flowchart LR
 | **Cabeceras HTTP**            | CSP (con `frame-ancestors 'none'`), `X-Content-Type-Options`, `Referrer-Policy`, `Permissions-Policy` y HSTS.                                                                                                |
 | **Seed fuera de producción**  | El build de Vercel falla si se intenta cargar el seed de prueba en producción sin confirmarlo, y el seed exige una contraseña propia fuera de local.                                                          |
 | **Contraseña acotada**        | Entre 8 y 72 bytes (límite real de bcrypt).                                                                                                                                                                  |
-
-Estado de cada hallazgo y riesgos aceptados (sesiones de 30 días sin revocación): [`docs/09-revision-seguridad.md`](docs/09-revision-seguridad.md).
 | **Autorización centralizada** | `VisibilityPolicy` decide el acceso en detalle, voto y opiniones. Un tema privado inaccesible responde **`404`** (no `403`) para no revelar que existe.                                                      |
 | **Validación de entradas**    | Zod en todos los endpoints (títulos de 3 a 120 caracteres, justificaciones de hasta 500, enumerados cerrados, cursores validados).                                                                           |
 | **Consultas parametrizadas**  | Prisma parametriza todas las consultas. En la búsqueda con `ILIKE` se escapan `%`, `_` y `\`.                                                                                                                |
-| **Subida de imágenes segura** | Tamaño máximo de 5 MB (`413`), tipo comprobado por _magic bytes_ (JPEG/PNG/WebP, `415`) y no solo por la extensión, y nombre de objeto aleatorio (`topics/<uuid>.<ext>`) que no depende del nombre original. |
+| **Subida de imágenes segura** | Tamaño máximo de 4 MB (`413`; la petición completa debe caber en los 4,5 MB que admite una función de Vercel), tipo comprobado por _magic bytes_ (JPEG/PNG/WebP, `415`) y no solo por la extensión, y nombre de objeto aleatorio (`topics/<uuid>.<ext>`) que no depende del nombre original. |
 | **Integridad de datos**       | `UNIQUE (topic_id, user_id)` impide votar dos veces incluso con peticiones concurrentes, y `CHECK` garantiza la coherencia de los contadores.                                                                |
 | **Secretos fuera del código** | Variables de entorno validadas al arrancar; `.env` excluido del control de versiones.                                                                                                                        |
 | **XSS**                       | React escapa todo el contenido generado por usuarios (títulos, justificaciones) y nunca se usa `dangerouslySetInnerHTML`.                                                                                    |
+
+Estado de cada hallazgo y riesgos aceptados (sesiones de 30 días sin revocación): [`docs/09-revision-seguridad.md`](docs/09-revision-seguridad.md).
 
 Ejemplo: un usuario que no es amigo intenta votar un tema privado.
 
@@ -340,7 +377,7 @@ HTTP/1.1 404 Not Found
 { "error": { "code": "NOT_FOUND", "message": "Tema no encontrado" } }
 ```
 
-### **2.6. Tests**
+### **2.6. Tests (pruebas)**
 
 Estrategia: **cada escenario `#### Scenario` de las specs de OpenSpec tiene al menos un test** cuyo nombre lo cita. Hay tres niveles:
 
@@ -349,6 +386,22 @@ Estrategia: **cada escenario `#### Scenario` de las specs de OpenSpec tiene al m
 | **Unitarios**   | Vitest                        | `VisibilityPolicy` (público, privado propio, privado de un amigo, privado ajeno); codificación de cursores; validación de imágenes (PNG válido, 6 MB → `413`, PDF renombrado a `.jpg` → `415`).                                                                                                                                                                                                                        |
 | **Integración** | Vitest + PostgreSQL de prueba | _Votos concurrentes del mismo usuario_: dos `castVote` simultáneos → solo uno se registra y `totalVotes` sube exactamente en 1. _Orden por tendencia_: temas con 10, 25 y 10 votos se devuelven como B, C, A. _Tema privado no listado_: no aparece en `GET /api/topics` aunque sea el más votado. _Crear un tema privado_: con 2 amigos se generan 2 notificaciones y, si falla una, no se crea el tema (atomicidad). |
 | **End-to-end**  | Playwright (viewport 390×844) | Votar con justificación → los botones desaparecen y se muestra la opinión en verde. Comprobar que la imagen del tema mide exactamente la mitad de la altura. Flujo privado: `ana` crea un tema privado → `bruno` ve la notificación, entra y vota → `dani` recibe "tema no encontrado" en la misma URL.                                                                                                                |
+
+**Cómo ejecutarlas** (preparación en §1.4, paso 6):
+
+| Comando | Qué ejecuta |
+| --- | --- |
+| `npm run lint` · `npm run typecheck` | ESLint y `tsc --noEmit` |
+| `npm test` | Vitest: unitarias (`tests/unit`) e integración (`tests/integration`, con PostgreSQL `opina_test`) |
+| `npm run test:e2e` | Playwright (`tests/e2e`): flujos completos en Chromium y accesibilidad con axe-core |
+
+**Trazabilidad:** cada criterio de aceptación (`CA-xx.y`) de las historias tiene un test cuyo título lo cita, o consta como no automatizable, con su motivo, en [`docs/10-trazabilidad-criterios.md`](docs/10-trazabilidad-criterios.md). Por ejemplo, `grep -rn "CA-07.3" tests` encuentra el test de ese criterio.
+
+**Estado (11 de noviembre de 2026):**
+
+- **Vitest:** 564 pruebas unitarias y de integración en verde en local el 9 de noviembre, ejecutadas dos veces seguidas (tarea T9). Desde entonces se añadieron las del borrado de temas (HU-23), que no entran en esa cifra.
+- **Accesibilidad:** 16 situaciones con axe-core sin infracciones el 9 de noviembre (más el detalle del autor con el diálogo de borrado, en la PR #4).
+- **CI en GitHub:** [Actions](https://github.com/Morius2100/ai4devs-finalproject--JRG-/actions). En la ejecución del 11 de noviembre pasan lint, typecheck, Vitest, build, `apk` y `docker`, pero el job `ci` falla en el paso «Instalar navegadores de Playwright» y los e2e no llegan a ejecutarse. Está pendiente de resolver.
 
 ---
 
@@ -490,7 +543,7 @@ erDiagram
 
 Los tres endpoints principales, en formato OpenAPI 3.0. Todos requieren sesión (cookie de Auth.js o, en la app, `Authorization: Bearer`).
 
-> El resto de la API (personas y perfiles, **solicitudes de amistad** `PUT/DELETE /api/users/{id}/friendship` y `/api/me/friend-requests`, notificaciones, historias, perfil propio e imágenes) está en [`docs/02-arquitectura.md` §2.5](docs/02-arquitectura.md). Las rutas de inicio de sesión, token, registro y solicitudes de amistad pueden responder `429 Too Many Requests` con `Retry-After`.
+> El resto de la API (personas y perfiles, **solicitudes de amistad** `PUT/DELETE /api/users/{id}/friendship` y `/api/me/friend-requests`, notificaciones, historias, perfil propio, **borrado de un tema propio** `DELETE /api/topics/{id}` (solo el autor; `404` en cualquier otro caso) e imágenes) está en [`docs/02-arquitectura.md` §2.5](docs/02-arquitectura.md). Las rutas de inicio de sesión, token, registro y solicitudes de amistad pueden responder `429 Too Many Requests` con `Retry-After`.
 
 ```yaml
 openapi: 3.0.3
@@ -816,18 +869,13 @@ Content-Type: application/json
 
 ## 7. Pull Requests
 
-_[PENDIENTE: todavía no se han abierto Pull Requests. La implementación empezará con el cambio `fase-1-plataforma-base`.]_
+Las fases 1 a 6 y las mejoras posteriores (cambios archivados en [`openspec/changes/archive/`](openspec/changes/archive/)) se publicaron con `push` directo a `main` mientras no había protección. El 9 de noviembre de 2026 se pasó al flujo con Pull Request (ver §2.4). Estas son las PR del [repositorio del proyecto](https://github.com/Morius2100/ai4devs-finalproject--JRG-/pulls?q=is%3Apr), todas desde la rama `JRGA` hacia `main`:
 
-Plan previsto: una PR por cambio SDD, con la rama `feat/fase-N-…`, la descripción basada en el `proposal.md` del cambio y el checklist de `tasks.md`.
+| PR | Título | Estado | Contenido |
+| --- | --- | --- | --- |
+| [#1](https://github.com/Morius2100/ai4devs-finalproject--JRG-/pull/1) | `docs: CI en verde en GitHub y archivo de documentar-ci-cd (T10)` | Cerrada sin fusionar | Mismo título que la #3 |
+| [#2](https://github.com/Morius2100/ai4devs-finalproject--JRG-/pull/2) | `docs: CI en verde en GitHub y archivo de documentar-ci-cd (T10)` | Cerrada sin fusionar | Mismo título que la #3 |
+| [#3](https://github.com/Morius2100/ai4devs-finalproject--JRG-/pull/3) | `docs: CI en verde en GitHub y archivo de documentar-ci-cd (T10)` | **Fusionada** el 9 de noviembre de 2026 | CI de GitHub en verde, documentación CI/CD ([`docs/12-ci-cd.md`](docs/12-ci-cd.md)) y archivo del cambio `documentar-ci-cd` |
+| [#4](https://github.com/Morius2100/ai4devs-finalproject--JRG-/pull/4) | `feat(topics): borrar un tema propio desde su detalle TKT-087 TKT-088 TKT-089` | **Abierta** | Cambio `borrar-temas-propios` (HU-23): `DELETE /api/topics/:id`, botón con papelera y diálogo de confirmación, pruebas de integración, de componentes, e2e y de accesibilidad (45 ficheros) |
 
-**Pull Request 1**
-
-_[PENDIENTE: `feat/fase-1-plataforma-base`: proyecto base, modelo de datos e identificación de usuarios]_
-
-**Pull Request 2**
-
-_[PENDIENTE]_
-
-**Pull Request 3**
-
-_[PENDIENTE]_
+Los prompts que originaron estos cambios están en [`prompts.md`](prompts.md), §7 y §8.
