@@ -5,8 +5,8 @@ Esta carpeta es una **copia de la documentación técnica** del proyecto, inclui
 | Dato | Valor |
 | --- | --- |
 | Fuente de verdad | [Morius2100/ai4devs-finalproject--JRG-](https://github.com/Morius2100/ai4devs-finalproject--JRG-) (carpetas `docs/` y `openspec/`) |
-| Rama de origen | `main` |
-| Commit de origen | `992564a` |
+| Rama de origen | `JRGA` |
+| Commit de origen | `7d2afd2` |
 | Aplicación desplegada | <https://ai4devs-finalproject-jrg.vercel.app/> |
 
 Si hay diferencias, manda el repositorio de código. La copia se repite antes de cada entrega.
